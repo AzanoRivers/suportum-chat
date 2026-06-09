@@ -1,0 +1,11 @@
+{
+  "name": "demo",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "suportum-chat": "workspace:*"
+  }
+}

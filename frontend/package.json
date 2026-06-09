@@ -1,0 +1,9 @@
+{
+  "name": "suportum-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --filter suportum-chat build",
+    "typecheck": "pnpm --filter suportum-chat typecheck",
+    "dev": "pnpm --filter demo dev"
+  }
+}

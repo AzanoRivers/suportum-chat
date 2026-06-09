@@ -1,0 +1,18 @@
+.theme-light-clean {
+  --color-bg-base:      #f8f8fc;
+  --color-bg-surface:   #ffffff;
+  --color-bg-elevated:  #f0f0f8;
+  --color-bg-overlay:   #e8e8f4;
+
+  --color-border-subtle:  #e0e0ec;
+  --color-border-default: #d0d0e4;
+  --color-border-strong:  #b0b0cc;
+
+  --color-text-primary:   #1a1a2e;
+  --color-text-secondary: #5a5a7a;
+  --color-text-muted:     #9a9ab8;
+
+  --color-accent:       #0066cc;
+  --color-accent-dim:   #0066cc22;
+  --color-accent-hover: #0055bb;
+}

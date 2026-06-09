@@ -1,0 +1,12 @@
+// Organisms — Secciones completas con estado y lógica de negocio
+// export { ChatPanel } from './shared/ChatPanel'
+// export { MessageList } from './shared/MessageList'
+// export { ChatHeader } from './shared/ChatHeader'
+// export { LoginView } from './LoginView'
+// export { SetupWizard } from './SetupWizard'
+// export { ClientHome } from './client/ClientHome'
+// export { ClientOrders } from './client/ClientOrders'
+// export { AgentInbox } from './agent/AgentInbox'
+// export { AgentOrders } from './agent/AgentOrders'
+// export { AdminUsers } from './admin/AdminUsers'
+// export { AdminSettings } from './admin/AdminSettings'

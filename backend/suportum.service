@@ -1,0 +1,19 @@
+﻿[Unit]
+Description=Suportum Chat API
+After=network.target
+
+[Service]
+User=opc
+WorkingDirectory=/home/opc/projects/suportum/backend
+EnvironmentFile=-/home/opc/projects/suportum/backend/.env
+ExecStart=/home/opc/projects/suportum/backend/.venv/bin/gunicorn "app.main:socket_app" \
+    -w 1 -k uvicorn.workers.UvicornWorker \
+    --bind 127.0.0.1:8001 \
+    --timeout 0 \
+    --access-logfile - \
+    --error-logfile -
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

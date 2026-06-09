@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+# =============================================================================
+# setup.sh -- One-time environment setup on the VPS
+#
+# Usage:
+#   chmod +x scripts/linux/setup.sh
+#   ./scripts/linux/setup.sh
+#
+# What it does:
+#   1. Checks Python 3.9
+#   2. Creates the virtualenv and installs dependencies
+#   3. Creates and registers the systemd service
+#   4. Starts the service
+#
+# Requirements:
+#   - Python 3.9 installed (python3.9)
+#   - Run from the backend/ directory
+#   - sudo privileges (needed for systemd)
+# =============================================================================
+
+set -euo pipefail
+
+# Always run from backend/ (2 levels up from this script)
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
+
+VENV_DIR=".venv"
+REQUIREMENTS="requirements.txt"
+HASH_FILE=".requirements.hash"
+ENV_FILE=".env"
+
+SERVICE_NAME="suportum"
+SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
+PROJECT_DIR="$PWD"                        # absolute path to backend/ (resolved after cd)
+SERVICE_USER="${SUDO_USER:-opc}"           # user that will run gunicorn
+
+# -- Output colors ------------------------------------------------------------
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+info()  { echo -e "${GREEN}[suportum:setup]${NC} $1"; }
+warn()  { echo -e "${YELLOW}[suportum:setup]${NC} $1"; }
+error() { echo -e "${RED}[suportum:setup] $1${NC}"; exit 1; }
+
+# -- Check Python 3.9 ---------------------------------------------------------
+info "Checking Python 3.9..."
+if ! command -v python3.9 &>/dev/null; then
+    error "python3.9 not found. Install it with: sudo dnf install python3.9 -y"
+fi
+python3.9 --version
+
+# -- Create virtualenv --------------------------------------------------------
+if [ -d "$VENV_DIR" ]; then
+    warn "Virtualenv '$VENV_DIR' already exists. Skipping creation."
+else
+    info "Creating virtualenv in $VENV_DIR with Python 3.9..."
+    python3.9 -m venv "$VENV_DIR"
+    info "Virtualenv created."
+fi
+
+# -- Activate virtualenv ------------------------------------------------------
+# shellcheck disable=SC1091
+source "$VENV_DIR/bin/activate"
+
+# -- Install dependencies -----------------------------------------------------
+info "Upgrading pip..."
+pip install --upgrade pip --quiet
+
+info "Installing dependencies from $REQUIREMENTS..."
+pip install -r "$REQUIREMENTS"
+
+sha256sum "$REQUIREMENTS" > "$HASH_FILE"
+info "Requirements hash saved to $HASH_FILE"
+
+# -- Fix SELinux context (Oracle Linux enforcing mode) ------------------------
+if command -v sestatus &>/dev/null && sestatus 2>/dev/null | grep -q "enforcing"; then
+    info "SELinux enforcing detected. Fixing context on .venv/bin/ ..."
+    chcon -R -t bin_t "${VENV_DIR}/bin/" 2>/dev/null || warn "chcon failed -- run it manually if needed."
+fi
+
+# -- Check .env ---------------------------------------------------------------
+if [ ! -f "$ENV_FILE" ]; then
+    warn ".env not found. Copy .env.example and fill in the values:"
+    warn "  cp ${PROJECT_DIR}/.env.example ${PROJECT_DIR}/.env && nano ${PROJECT_DIR}/.env"
+else
+    info ".env found."
+fi
+
+# -- Write systemd service ----------------------------------------------------
+info "Writing systemd service '$SERVICE_NAME' at $SERVICE_FILE ..."
+sudo tee "$SERVICE_FILE" > /dev/null <<EOF
+[Unit]
+Description=Suportum Chat API
+After=network.target
+
+[Service]
+User=${SERVICE_USER}
+WorkingDirectory=${PROJECT_DIR}
+EnvironmentFile=-${PROJECT_DIR}/.env
+ExecStart=${PROJECT_DIR}/.venv/bin/gunicorn "app.main:socket_app" \\
+    -w 1 -k uvicorn.workers.UvicornWorker \\
+    --bind 127.0.0.1:8001 \\
+    --timeout 0 \\
+    --access-logfile - \\
+    --error-logfile -
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable "$SERVICE_NAME"
+info "Service '$SERVICE_NAME' registered and enabled."
+
+# -- Start the service --------------------------------------------------------
+if systemctl is-active --quiet "$SERVICE_NAME"; then
+    warn "Service '$SERVICE_NAME' is already running. Skipping start."
+else
+    info "Starting service '$SERVICE_NAME'..."
+    sudo systemctl start "$SERVICE_NAME"
+    sleep 2
+
+    if systemctl is-active --quiet "$SERVICE_NAME"; then
+        info "Service '$SERVICE_NAME' is running."
+    else
+        error "Service '$SERVICE_NAME' failed to start. Check logs: journalctl -u $SERVICE_NAME -n 50"
+    fi
+fi
+
+# -- Done ---------------------------------------------------------------------
+info "Setup complete."
+echo ""
+echo "  Service : $SERVICE_NAME"
+echo "  Status  : $(systemctl is-active $SERVICE_NAME)"
+echo "  Logs    : journalctl -u $SERVICE_NAME -f"
+echo "  Deploy  : ./scripts/linux/deploy.sh"
+echo ""

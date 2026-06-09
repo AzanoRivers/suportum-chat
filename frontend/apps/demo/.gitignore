@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.env
+
+# Logo del host — cada dev lo copia desde su propio proyecto
+public/azanolabs-logo.png

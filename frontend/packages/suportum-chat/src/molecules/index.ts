@@ -1,0 +1,11 @@
+// Molecules — 2-5 átomos con lógica de presentación
+// export { MessageBubble } from './MessageBubble'
+// export { MessageInput } from './MessageInput'
+// export { TypingIndicator } from './TypingIndicator'
+// export { StatusBadge } from './StatusBadge'
+// export { ConversationItem } from './ConversationItem'
+// export { OrderCard } from './OrderCard'
+// export { TicketRow } from './TicketRow'
+// export { UserRow } from './UserRow'
+// export { ForbiddenPlaceholder } from './ForbiddenPlaceholder'
+// export { ErrorPlaceholder } from './ErrorPlaceholder'
