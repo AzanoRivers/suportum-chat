@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_SOCKET_URL ?? 'http://localhost:8001'
 let globalSocket: Socket | null = null
 
 export function getSocket(token: string, apiKey: string): Socket {
-  if (!globalSocket || !globalSocket.connected) {
+  if (!globalSocket) {
     globalSocket = io(`${API_URL}/${apiKey}`, {
       auth: { token },
       transports: ['websocket'],
@@ -21,7 +21,7 @@ export function getSocket(token: string, apiKey: string): Socket {
           useAuthStore.getState().clearSession()
         }
       } catch {
-        // Error de red — dejar que reconnect lo intente
+        // Error de red - dejar que reconnect lo intente
       }
     })
   }

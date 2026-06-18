@@ -1,0 +1,9 @@
+.theme-card--active   { border-color: var(--tc-accent); }
+.theme-card--inactive { border-color: var(--color-border-default); }
+.theme-card__preview  { background: var(--tc-bg); padding: 8px; min-height: 60px; }
+.theme-card__surface  { background: var(--tc-surface); border-radius: 2px; padding: 4px; }
+.theme-card__bar--accent { width: 60%; height: 6px; background: var(--tc-accent); border-radius: 1px; }
+.theme-card__bar--text1  { width: 80%; height: 4px; background: var(--tc-text); opacity: 0.3; margin-top: 4px; border-radius: 1px; }
+.theme-card__bar--text2  { width: 50%; height: 4px; background: var(--tc-text); opacity: 0.15; margin-top: 3px; border-radius: 1px; }
+.theme-card__label { background: var(--color-bg-elevated); }
+.theme-card__check { color: var(--tc-accent); }

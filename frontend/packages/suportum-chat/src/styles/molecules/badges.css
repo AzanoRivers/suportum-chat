@@ -1,0 +1,24 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Status badges */
+.badge--pending   { color: var(--color-status-pending);   border: 1px solid var(--color-status-pending);   opacity: 0.9; }
+.badge--active    { color: var(--color-status-active);    border: 1px solid var(--color-status-active);    opacity: 0.9; }
+.badge--taken     { color: var(--color-status-taken);     border: 1px solid var(--color-status-taken);     opacity: 0.9; }
+.badge--completed { color: var(--color-status-completed); border: 1px solid var(--color-status-completed); opacity: 0.9; }
+.badge--cancelled { color: var(--color-status-cancelled); border: 1px solid var(--color-status-cancelled); opacity: 0.9; }
+
+/* Active indicator */
+.badge--user-active   { color: var(--color-accent);     border: 1px solid var(--color-accent); }
+.badge--user-inactive { color: var(--color-text-muted); border: 1px solid var(--color-border-default); }
+
+/* Role badges */
+.badge--role-client { color: var(--color-text-secondary); border: 1px solid var(--color-border-default); opacity: 0.8; }
+.badge--role-agent  { color: var(--color-accent);         border: 1px solid var(--color-accent); }
+.badge--role-admin  { color: var(--color-status-pending); border: 1px solid var(--color-status-pending); }

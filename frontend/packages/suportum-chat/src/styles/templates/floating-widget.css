@@ -1,0 +1,48 @@
+/* Barra minimizada */
+.mini-bar { display: flex; align-items: center; gap: 10px; padding: 0 1rem; height: 56px; width: 100%; }
+.mini-bar__icon-wrap {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  transition: width 220ms ease-out;
+}
+.mini-bar__icon-wrap--normal  { width: 20px; }
+.mini-bar__icon-wrap--winking { width: 32px; }
+.mini-bar__chat-icon { color: var(--color-accent); transition: transform 220ms ease-out; }
+.mini-bar__chat-icon--normal  { transform: scale(1); }
+.mini-bar__chat-icon--winking { transform: scale(1.75); }
+.mini-bar__wink-face { transition: opacity 160ms ease-out; }
+.mini-bar__wink-face--hidden  { opacity: 0; }
+.mini-bar__wink-face--visible { opacity: 1; }
+.mini-bar__label {
+  flex: 1; font-size: 0.875rem; font-weight: 500;
+  color: var(--color-text-secondary); letter-spacing: 0.02em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mini-bar__actions { display: flex; gap: 6px; flex-shrink: 0; }
+.mini-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 8px;
+  background: transparent; border: 1px solid rgba(255,255,255,0.12);
+  color: var(--color-text-muted); cursor: pointer; flex-shrink: 0;
+  transition: color 150ms ease-out, border-color 150ms ease-out;
+}
+.mini-btn:hover {
+  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+.mini-btn--close:hover { color: var(--color-status-cancelled); border-color: rgba(255,90,122,0.35); }
+
+/* Chat button flotante */
+.beacon {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid var(--color-accent);
+  animation: widget-beacon 2.8s ease-out infinite;
+  pointer-events: none;
+}
+.chat-btn { position: relative; transition: transform 220ms ease-out, box-shadow 200ms ease-out, background-color 150ms ease-out; }
+.chat-btn--normal  { transform: scale(1); }
+.chat-btn--winking { transform: scale(1.14); }
+
+/* SVG icon groups: opacity toggle */
+.chat-icon-group { transition: opacity 160ms ease-out; }
+.chat-icon-group--visible { opacity: 1; }
+.chat-icon-group--hidden  { opacity: 0; }

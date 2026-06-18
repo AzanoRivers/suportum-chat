@@ -1,0 +1,39 @@
+/* Shell layouts */
+.widget-shell { display: flex; flex-direction: column; height: 100%; }
+.widget-shell__body { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+.widget-shell__full { display: flex; flex-direction: column; height: 100%; }
+.widget-shell__full-body { flex: 1; min-height: 0; overflow: hidden; }
+
+/* Footer */
+.widget-footer-bar {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 4px;
+  border-top: 1px solid var(--color-border-subtle); background: var(--color-bg-surface);
+}
+.widget-footer-brand { font-weight: 700; letter-spacing: 0.03em; }
+.widget-footer-by { color: var(--color-text-muted); }
+.widget-footer-link {
+  font-weight: 500; color: var(--color-text-muted);
+  text-decoration: none; transition: color 150ms ease-out;
+}
+.widget-footer-link:hover { color: var(--color-text-secondary); }
+
+/* Slide panels */
+.widget-slide-panel { position: absolute; inset: 0; will-change: transform; }
+.widget-slide-panel.animated { transition: transform 290ms cubic-bezier(0.4, 0, 0.2, 1); }
+
+.widget-auth-panel  { transform: translateX(0); }
+.widget-auth-panel.is-app { transform: translateX(-100%); }
+
+.widget-app-panel   { transform: translateX(100%); }
+.widget-app-panel.is-app  { transform: translateX(0); }
+
+/* Sub-paneles */
+.widget-auth-subpanels { position: relative; height: 100%; overflow: hidden; }
+.widget-sub-panel {
+  position: absolute; inset: 0; will-change: transform;
+  transition: transform 270ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.widget-login-panel            { transform: translateX(0); }
+.widget-login-panel.is-hidden  { transform: translateX(-100%); }
+.widget-register-panel         { transform: translateX(100%); }
+.widget-register-panel.is-visible { transform: translateX(0); }

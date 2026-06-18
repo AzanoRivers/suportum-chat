@@ -1,0 +1,6 @@
+.fade-transition {
+  transition: opacity var(--ft-duration, 130ms) ease-out, transform var(--ft-duration, 130ms) ease-out;
+  will-change: opacity, transform;
+}
+.fade-transition--visible { opacity: 1; transform: translateY(0); }
+.fade-transition--hidden  { opacity: 0; transform: translateY(6px); }

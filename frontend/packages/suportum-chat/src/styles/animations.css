@@ -1,0 +1,78 @@
+/* ── Widget: abrir / cerrar ─────────────────────────────────────── */
+@keyframes widget-beacon {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@keyframes widget-open {
+  from { opacity: 0; transform: scale(0.08); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+.widget-enter {
+  transform-origin: bottom right;
+  animation: widget-open 260ms cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes widget-close {
+  from { opacity: 1; transform: scale(1);    }
+  to   { opacity: 0; transform: scale(0.08); }
+}
+.widget-exit {
+  transform-origin: bottom right;
+  animation: widget-close 210ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+/* ── Widget: minimizar / restaurar ─────────────────────────────── */
+@keyframes widget-minimize-down {
+  from { opacity: 1; transform: scaleY(1);    }
+  to   { opacity: 0; transform: scaleY(0.05); }
+}
+.widget-minimize-exit {
+  transform-origin: bottom center;
+  animation: widget-minimize-down 190ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes widget-restore-up {
+  from { opacity: 0; transform: scaleY(0.05); }
+  to   { opacity: 1; transform: scaleY(1);    }
+}
+.widget-restore-enter {
+  transform-origin: bottom center;
+  animation: widget-restore-up 260ms cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes bar-close-shrink {
+  from { opacity: 1; transform: scaleX(1); }
+  to   { opacity: 0; transform: scaleX(0); }
+}
+.bar-close-exit {
+  transform-origin: right center;
+  animation: bar-close-shrink 200ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+/* ── OS: transiciones de pantalla ──────────────────────────────── */
+@keyframes os-slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes os-slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* ── App icons: aparición escalonada ───────────────────────────── */
+@keyframes app-icon-appear {
+  from { opacity: 0; transform: scale(0.88) translateY(6px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.app-icon-appear {
+  animation: app-icon-appear 260ms cubic-bezier(0.2, 0, 0.2, 1) both;
+}
+
+/* Typing indicator: dot delays */
+.dot-delay-0 { animation-delay: 0ms; }
+.dot-delay-1 { animation-delay: 150ms; }
+.dot-delay-2 { animation-delay: 300ms; }

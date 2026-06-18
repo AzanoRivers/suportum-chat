@@ -1,3 +1,5 @@
+import { User } from 'lucide-react'
+
 type AvatarSize = 'sm' | 'md' | 'lg'
 
 interface AvatarProps {
@@ -11,19 +13,27 @@ const sizeClasses: Record<AvatarSize, string> = {
   lg: 'w-12 h-12 text-base',
 }
 
-export function Avatar({ username, size = 'md' }: AvatarProps) {
-  const initial = username ? username.charAt(0).toUpperCase() : '?'
+const iconSizes: Record<AvatarSize, number> = {
+  sm: 12,
+  md: 16,
+  lg: 20,
+}
 
+export function Avatar({ username, size = 'md' }: AvatarProps) {
   return (
     <span
       aria-hidden="true"
       className={[
         'inline-flex items-center justify-center rounded-full font-semibold select-none shrink-0',
-        'bg-[--color-bg-overlay] text-[--color-text-primary]',
+        'bg-(--color-bg-overlay) text-(--color-text-primary)',
         sizeClasses[size],
       ].join(' ')}
     >
-      {initial}
+      {username ? (
+        username.charAt(0).toUpperCase()
+      ) : (
+        <User size={iconSizes[size]} strokeWidth={1.5} />
+      )}
     </span>
   )
 }

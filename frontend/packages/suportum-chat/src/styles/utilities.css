@@ -1,0 +1,93 @@
+/* ── Altura del widget ───────────────────────────────────────────── */
+.widget-full-height {
+  height: 100vh;
+  height: 100dvh;
+}
+@media (min-width: 1024px) {
+  .widget-full-height {
+    height: 600px;
+  }
+}
+
+/* ── Scroll interno ──────────────────────────────────────────────── */
+.message-list {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb) var(--sb-track);
+}
+
+/* Scrollbar WebKit: scoped al widget para no afectar la página host */
+.glass-panel ::-webkit-scrollbar         { width: 5px; height: 5px; }
+.glass-panel ::-webkit-scrollbar-track   { background: var(--sb-track); border-radius: 10px; }
+.glass-panel ::-webkit-scrollbar-thumb   { background: var(--sb-thumb); border-radius: 10px; }
+.glass-panel ::-webkit-scrollbar-thumb:hover { background: var(--sb-thumb-hover); }
+
+/* ── Fondos ──────────────────────────────────────────────────────── */
+.glass-panel {
+  background: linear-gradient(
+    158deg,
+    rgba(2, 6, 42, 0.98) 0%,
+    rgba(6, 16, 76, 0.96) 48%,
+    rgba(11, 26, 108, 0.93) 100%
+  );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.widget-bg {
+  background:
+    radial-gradient(ellipse 110% 55% at 25% 0%, rgba(79, 195, 255, 0.055) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 45% at 85% 100%, rgba(17, 40, 130, 0.45) 0%, transparent 60%),
+    linear-gradient(168deg, #020830 0%, #040f3e 30%, #071460 62%, #0c1d78 100%);
+}
+
+.dragon-panel {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ── Tipografía utilitaria ───────────────────────────────────────── */
+.label-caps {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-label);
+}
+
+.widget-footer {
+  font-size: 0.625rem;
+  height: 22px;
+}
+@media (min-width: 1024px) {
+  .widget-footer {
+    font-size: 0.72rem;
+    height: 28px;
+  }
+}
+
+@keyframes suportum-rainbow {
+  0%   { background-position: 0%   center; }
+  100% { background-position: 200% center; }
+}
+
+.rainbow-brand {
+  background: linear-gradient(
+    90deg,
+    #6366f1, #22d3ee, #a855f7,
+    #22c55e, #eab308, #f97316,
+    #ec4899, #6366f1
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: suportum-rainbow 8s linear infinite;
+}
+
+/* Scroll snap */
+.snap-x-mandatory { scroll-snap-type: x mandatory; }
+.snap-start { scroll-snap-align: start; }
+/* Scroll suave webkit */
+.smooth-scroll { -webkit-overflow-scrolling: touch; }

@@ -1,0 +1,9 @@
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 80% 55% at 15% 5%,  rgba(79, 195, 255, 0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 45% at 88% 95%, rgba(79, 195, 255, 0.06) 0%, transparent 60%),
+    var(--color-bg-base);
+}

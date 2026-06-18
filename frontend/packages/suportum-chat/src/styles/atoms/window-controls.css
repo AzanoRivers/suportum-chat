@@ -1,0 +1,12 @@
+.wc-btns { gap: 4px; flex-shrink: 0; }
+.wc-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 6px;
+  background: transparent; border: 1px solid rgba(255,255,255,0.12);
+  color: var(--color-text-muted); cursor: pointer; flex-shrink: 0;
+  transition: color 150ms ease-out, border-color 150ms ease-out;
+}
+.wc-btn:hover {
+  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}

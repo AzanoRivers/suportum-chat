@@ -1,0 +1,13 @@
+.step-indicator { display: flex; align-items: center; gap: 6px; width: 100%; }
+.step-bar {
+  flex: 1; height: 3px; border-radius: 999px;
+  background: var(--color-border-strong);
+  transition: background 200ms ease-out, opacity 200ms ease-out;
+}
+.step-bar--done    { background: var(--color-accent); opacity: 0.5; }
+.step-bar--current { background: var(--color-accent); opacity: 1; }
+.step-counter {
+  font-size: 0.625rem; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--color-text-muted); margin-left: 2px;
+  white-space: nowrap; text-transform: uppercase;
+}

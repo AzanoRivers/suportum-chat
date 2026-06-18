@@ -1,0 +1,48 @@
+/* Input atom */
+.field-input {
+  width: 100%; border-radius: var(--radius-md);
+  padding: 0.5rem 0.875rem; font-size: 1rem;
+  color: var(--color-text-primary); background: var(--color-bg-base);
+  border: 2px solid var(--color-border-strong); outline: none;
+  transition: border-color 150ms ease-out; min-height: 40px;
+}
+.field-input:focus { border-color: var(--color-accent); }
+.field-input--error { border-color: var(--color-status-cancelled); }
+.field-input--error:focus { border-color: var(--color-status-cancelled); }
+.field-input:disabled { opacity: 0.4; cursor: not-allowed; }
+.field-error { font-size: 0.875rem; color: var(--color-status-cancelled); }
+
+/* PasswordField */
+.pw-wrapper { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.pw-label { font-size: 0.875rem; font-weight: 500; color: var(--color-text-secondary); }
+.pw-field {
+  display: flex; align-items: center; width: 100%; min-height: 40px;
+  border-radius: var(--radius-md); background: var(--color-bg-base);
+  border: 2px solid var(--color-border-strong);
+  transition: border-color 150ms ease-out; overflow: hidden;
+}
+.pw-field:focus-within { border-color: var(--color-accent); }
+.pw-field--error { border-color: var(--color-status-cancelled); }
+.pw-field--error:focus-within { border-color: var(--color-status-cancelled); }
+.pw-field--disabled { opacity: 0.4; }
+.pw-input {
+  flex: 1; height: 100%; min-height: 36px; border: none; outline: none;
+  background: transparent; padding-left: 0.875rem; padding-right: 0.5rem;
+  font-size: 1rem; color: var(--color-text-primary);
+}
+.pw-input:disabled { cursor: not-allowed; }
+.pw-sep { width: 1px; height: 24px; background: var(--color-border-default); flex-shrink: 0; }
+.pw-actions { display: flex; align-items: center; padding: 0 6px; gap: 1px; }
+.pw-action-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 6px;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--color-text-muted);
+  transition: color 150ms ease-out, background 150ms ease-out; flex-shrink: 0;
+}
+.pw-action-btn:hover { color: var(--color-text-secondary); background: rgba(255,255,255,0.05); }
+.pw-action-btn--generate:hover { color: var(--color-accent); background: var(--color-accent-dim); }
+.pw-action-btn--copy:hover { color: var(--color-accent); background: var(--color-accent-dim); }
+.pw-action-btn--copied { color: var(--color-status-active) !important; }
+.pw-action-btn--copied:hover { color: var(--color-status-active) !important; background: transparent !important; }
+.pw-action-btn--dim { opacity: 0.35; }

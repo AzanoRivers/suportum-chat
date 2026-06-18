@@ -13,11 +13,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-[--color-accent] text-[--color-bg-base] hover:bg-[--color-accent-hover] border border-transparent',
+    'bg-(--color-accent) text-(--color-bg-base) hover:bg-(--color-accent-hover) border border-transparent',
   ghost:
-    'bg-transparent text-[--color-text-primary] hover:bg-[--color-bg-elevated] border border-[--color-border-default]',
+    'bg-transparent text-(--color-text-primary) hover:bg-(--color-bg-elevated) border border-(--color-border-default)',
   danger:
-    'bg-[--color-status-cancelled] text-white hover:opacity-90 border border-transparent',
+    'bg-(--color-status-cancelled) text-white hover:opacity-90 border border-transparent',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -44,10 +44,10 @@ export function Button({
       disabled={disabled}
       aria-label={ariaLabel}
       className={[
-        'inline-flex items-center justify-center gap-2 font-medium rounded-[--radius-md] transition-all',
+        'inline-flex items-center justify-center gap-2 font-medium tracking-wide rounded-(--radius-md) transition-all cursor-pointer',
         'min-h-11 min-w-11',
         'disabled:opacity-50 disabled:cursor-not-allowed',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-accent]',
+        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-(--color-accent)',
         variantClasses[variant],
         sizeClasses[size],
         className,

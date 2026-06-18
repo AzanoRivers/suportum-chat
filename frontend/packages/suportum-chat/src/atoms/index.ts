@@ -1,6 +1,12 @@
-// Atoms — Primitivos sin lógica de negocio
+// Atoms - Primitivos sin logica de negocio
+export { AzanoLogo } from './AzanoLogo'
+export { ProjectLogo } from './ProjectLogo'
 export { Button } from './Button'
 export { Input } from './Input'
 export { Badge } from './Badge'
 export { Avatar } from './Avatar'
 export { Spinner } from './Spinner'
+export { WindowControls } from './WindowControls'
+export { FadeTransition } from './FadeTransition'
+export { FeedbackBanner } from './FeedbackBanner'
+export type { Feedback, FeedbackType } from './FeedbackBanner'

@@ -10,7 +10,38 @@
 
 `suportum-chat` is a React widget package for embedding real-time support, ticket management, and order tracking into any web application. It connects to a Suportum backend and automatically adapts its interface based on the authenticated user's role.
 
-### Installation
+---
+
+### Why are there 3 `package.json` files?
+
+This folder is a **pnpm monorepo** — a single repository that holds 3 separate projects, each with its own `package.json`:
+
+```
+frontend/                          <-- (1) Monorepo root
+├── package.json                       Only has scripts: build, dev, typecheck
+│                                      Never published. Just coordinates the workspace.
+│
+├── packages/
+│   └── suportum-chat/             <-- (2) THE npm package (what gets published)
+│       ├── package.json               name: "suportum-chat", version: "0.1.0"
+│       └── src/                       This is what users install with: pnpm add suportum-chat
+│
+└── apps/
+    └── demo/                      <-- (3) Local development sandbox (never published)
+        ├── package.json               name: "demo", private: true
+        └── src/                       Vite app that simulates a real site embedding the widget
+```
+
+**In short:**
+- `(1)` is plumbing — run commands from here, nothing more.
+- `(2)` is the real product — the npm package with all React components.
+- `(3)` is your local browser preview — open `localhost:5173` and see the widget live while developing.
+
+Only `(2)` ever gets published to npm. Projects `(1)` and `(3)` exist only to make development easier.
+
+---
+
+### Installation (for end users)
 
 ```bash
 npm install suportum-chat
@@ -20,30 +51,24 @@ pnpm add suportum-chat
 
 ### Keeping Up to Date
 
-The widget is updated frequently with fixes and improvements. To get the latest version, run a single command in your project:
-
 ```bash
-# npm
 npm update suportum-chat
-
-# pnpm
+# or
 pnpm update suportum-chat
-
-# yarn
-yarn upgrade suportum-chat
 ```
 
-No configuration changes needed after updating. Styles, logic, and components are always bundled together, so the update is atomic.
+No configuration changes needed after updating. Styles, logic, and components are bundled together in one JS file — the update is atomic.
+
+---
 
 ### Basic Usage
 
 ```tsx
-import { SupportWidget } from 'suportum-chat'
-import 'suportum-chat/styles'
+import { SuportumChat } from 'suportum-chat'
 
 export default function App() {
   return (
-    <SupportWidget
+    <SuportumChat
       apiUrl="https://your-backend.example.com"
       apiKey="your-project-api-key"
     />
@@ -51,7 +76,11 @@ export default function App() {
 }
 ```
 
-The widget renders a floating button. When opened, users are asked to sign in. The UI adapts to their role: `client` sees the chat, `agent` sees tickets and direct messages, `admin` sees full management panels.
+> No CSS import needed — styles are injected automatically when the widget mounts.
+
+The widget renders a floating button. When opened, users sign in and the UI adapts to their role: `client` sees the chat, `agent` sees tickets and direct messages, `admin` sees full management panels.
+
+---
 
 ### Props
 
@@ -63,9 +92,11 @@ The widget renders a floating button. When opened, users are asked to sign in. T
 | `theme` | `'dark-dragon' \| 'light-clean'` | No | `'dark-dragon'` | Visual theme |
 | `locale` | `'en' \| 'es'` | No | `'en'` | Language for the widget interface |
 
+---
+
 ### Theming
 
-The package ships with two built-in themes. You can override design tokens by targeting CSS custom properties:
+Override any design token via CSS custom properties:
 
 ```css
 :root {
@@ -74,51 +105,129 @@ The package ships with two built-in themes. You can override design tokens by ta
 }
 ```
 
-### Development Setup
+---
+
+### Development Setup (contributors)
+
+All commands run from the **monorepo root** (`frontend/`):
 
 ```bash
-# Clone and install workspace dependencies
+# 1. Install all workspace dependencies (run once after cloning)
 pnpm install
 
-# Start the demo app (connects to a local backend on port 8001)
+# 2. Start the demo app at localhost:5173 — see the widget live
 pnpm dev
 
-# Build the package
+# 3. Build the publishable package (output: packages/suportum-chat/dist/)
 pnpm build
 
-# Type check
+# 4. Type check without building
 pnpm typecheck
 ```
 
-### Project Structure
+> You never need to `cd` into `packages/suportum-chat/` or `apps/demo/` to run these commands.
+> pnpm routes everything automatically via the workspace.
+
+#### First-time local setup
+
+The demo app uses the AzanoLabs logo as a placeholder background. Copy it manually (it is gitignored):
+
+```powershell
+Copy-Item `
+  "C:\DevCode\Repositories\01_AzanoLabs\azanolabs-web\public\images\og-azanolabs-comp.png" `
+  "apps\demo\public\azanolabs-logo.png"
+```
+
+Then create your local env file:
+
+```bash
+cp apps/demo/.env.example apps/demo/.env
+# Edit .env and set VITE_API_URL and VITE_API_KEY
+```
+
+---
+
+### Publishing a new version
+
+```powershell
+# 1. Bump version (choose one)
+npm version patch   # bug fix:     0.1.0 -> 0.1.1
+npm version minor   # new feature: 0.1.1 -> 0.2.0
+npm version major   # breaking:    0.2.0 -> 1.0.0
+
+# 2. Build
+pnpm build
+
+# 3. Publish
+pnpm --filter suportum-chat publish --no-git-checks
+```
+
+---
+
+### Component Architecture
+
+The package follows Atomic Design. Each level only imports from the level immediately below it:
 
 ```
-frontend/
-├── packages/
-│   └── suportum-chat/        # Publishable npm package
-│       └── src/
-│           ├── atoms/        # Base UI primitives
-│           ├── molecules/    # Composed components
-│           ├── organisms/    # Feature sections with state
-│           ├── templates/    # Role-specific layouts
-│           ├── hooks/        # Business logic hooks
-│           ├── lib/          # API client, socket, auth
-│           ├── store/        # Zustand global stores
-│           ├── i18n/         # en.ts, es.ts, hook
-│           └── styles/       # globals.css + themes
-└── apps/
-    └── demo/                 # Vite development sandbox
+atoms/        Button, Input, Badge, Avatar, Spinner
+    |
+molecules/    MessageBubble, MessageInput, TypingIndicator, OrderCard...
+    |
+organisms/    ChatPanel, AgentInbox, ClientOrders, AdminUsers...
+    |
+templates/    FloatingWidget (the root component)
+```
+
+Supporting layers (no hierarchy restriction):
+
+```
+hooks/        useSocket, useChat, useAuth, useOrders
+lib/          api.ts, socket.ts
+store/        authStore (Zustand)
+i18n/         en.ts, es.ts, useI18n hook
+styles/       globals.css (Tailwind v4 @theme tokens), themes/
 ```
 
 ---
 
 ## Español
 
-### Descripción general
+### Descripcion general
 
-`suportum-chat` es un paquete de widget React para embeber soporte en tiempo real, gestión de tickets y seguimiento de órdenes en cualquier aplicación web. Se conecta a un backend Suportum y adapta su interfaz automáticamente según el rol del usuario autenticado.
+`suportum-chat` es un paquete de widget React para embeber soporte en tiempo real, gestion de tickets y seguimiento de ordenes en cualquier aplicacion web. Se conecta a un backend Suportum y adapta su interfaz automaticamente segun el rol del usuario autenticado.
 
-### Instalación
+---
+
+### Por que hay 3 archivos `package.json`?
+
+Esta carpeta es un **monorepo pnpm** — un solo repositorio que contiene 3 proyectos separados, cada uno con su propio `package.json`:
+
+```
+frontend/                          <-- (1) Raiz del monorepo
+├── package.json                       Solo tiene scripts: build, dev, typecheck
+│                                      Nunca se publica. Solo coordina el workspace.
+│
+├── packages/
+│   └── suportum-chat/             <-- (2) EL paquete npm (lo que se publica)
+│       ├── package.json               name: "suportum-chat", version: "0.1.0"
+│       └── src/                       Esto es lo que instalan los usuarios: pnpm add suportum-chat
+│
+└── apps/
+    └── demo/                      <-- (3) Sandbox de desarrollo local (nunca se publica)
+        ├── package.json               name: "demo", private: true
+        └── src/                       App Vite que simula un sitio real embebiendo el widget
+```
+
+**En resumen:**
+- `(1)` es fontaneria: corre comandos desde aqui, nada mas.
+- `(2)` es el producto real: el paquete npm con todos los componentes React.
+- `(3)` es tu preview en el browser: abre `localhost:5173` y ve el widget en vivo mientras desarrollas.
+
+Solo `(2)` se publica en npm. Los proyectos `(1)` y `(3)` existen solo para facilitar el desarrollo.
+
+---
+
+### Instalacion (usuarios finales)
 
 ```bash
 npm install suportum-chat
@@ -126,77 +235,110 @@ npm install suportum-chat
 pnpm add suportum-chat
 ```
 
-### Uso básico
+### Mantenerlo actualizado
+
+```bash
+npm update suportum-chat
+# o
+pnpm update suportum-chat
+```
+
+No hacen falta cambios de configuracion al actualizar. Estilos, logica y componentes van en un solo archivo JS.
+
+---
+
+### Uso basico
 
 ```tsx
-import { SupportWidget } from 'suportum-chat'
-import 'suportum-chat/styles'
+import { SuportumChat } from 'suportum-chat'
 
 export default function App() {
   return (
-    <SupportWidget
+    <SuportumChat
       apiUrl="https://tu-backend.ejemplo.com"
-      apiKey="tu-clave-de-api-del-proyecto"
+      apiKey="tu-clave-de-api"
     />
   )
 }
 ```
 
-El widget renderiza un botón flotante. Al abrirlo, se solicita al usuario que inicie sesión. La interfaz se adapta a su rol: `client` ve el chat, `agent` ve tickets y mensajes directos, `admin` ve los paneles de gestión completos.
+> No hace falta importar CSS: los estilos se inyectan automaticamente cuando el widget monta.
+
+---
 
 ### Props
 
-| Prop | Tipo | Requerido | Por defecto | Descripción |
+| Prop | Tipo | Requerido | Por defecto | Descripcion |
 |---|---|---|---|---|
 | `apiUrl` | `string` | Si | | URL base del backend Suportum |
-| `apiKey` | `string` | Si | | Clave de API del proyecto desde el panel de admin |
-| `position` | `'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | No | `'bottom-right'` | Posición del botón del widget |
+| `apiKey` | `string` | Si | | Clave de API del proyecto |
+| `position` | `'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | No | `'bottom-right'` | Posicion del boton flotante |
 | `theme` | `'dark-dragon' \| 'light-clean'` | No | `'dark-dragon'` | Tema visual |
-| `locale` | `'en' \| 'es'` | No | `'en'` | Idioma de la interfaz del widget |
+| `locale` | `'en' \| 'es'` | No | `'en'` | Idioma de la interfaz |
 
-### Temas
+---
 
-El paquete incluye dos temas integrados. Se pueden sobreescribir los tokens de diseño apuntando a las propiedades CSS personalizadas:
+### Configuracion de desarrollo (contribuidores)
 
-```css
-:root {
-  --color-accent: #ff6b35;
-  --color-bg-base: #ffffff;
-}
-```
-
-### Configuración de Desarrollo
+Todos los comandos se corren desde la **raiz del monorepo** (`frontend/`):
 
 ```bash
-# Clonar e instalar dependencias del workspace
+# 1. Instalar dependencias del workspace (una vez al clonar)
 pnpm install
 
-# Iniciar la app demo (conecta a un backend local en el puerto 8001)
+# 2. Iniciar la app demo en localhost:5173
 pnpm dev
 
-# Compilar el paquete
+# 3. Compilar el paquete publicable (salida: packages/suportum-chat/dist/)
 pnpm build
 
-# Verificación de tipos
+# 4. Verificacion de tipos sin compilar
 pnpm typecheck
 ```
 
-### Estructura del Proyecto
+> Nunca necesitas hacer `cd` a `packages/suportum-chat/` ni a `apps/demo/` para estos comandos.
+> pnpm enruta todo automaticamente via el workspace.
+
+#### Setup inicial
+
+La app demo usa el logo de AzanoLabs como fondo. Copialo manualmente (esta en .gitignore):
+
+```powershell
+Copy-Item `
+  "C:\DevCode\Repositories\01_AzanoLabs\azanolabs-web\public\images\og-azanolabs-comp.png" `
+  "apps\demo\public\azanolabs-logo.png"
+```
+
+Luego crea tu archivo de entorno local:
+
+```bash
+cp apps/demo/.env.example apps/demo/.env
+# Edita .env con VITE_API_URL y VITE_API_KEY
+```
+
+---
+
+### Arquitectura de componentes
+
+El paquete sigue Atomic Design. Cada nivel solo importa del nivel inmediatamente inferior:
 
 ```
-frontend/
-├── packages/
-│   └── suportum-chat/        # Paquete npm publicable
-│       └── src/
-│           ├── atoms/        # Primitivos base de UI
-│           ├── molecules/    # Componentes compuestos
-│           ├── organisms/    # Secciones de feature con estado
-│           ├── templates/    # Layouts por rol
-│           ├── hooks/        # Hooks de lógica de negocio
-│           ├── lib/          # Cliente API, socket, auth
-│           ├── store/        # Stores globales Zustand
-│           ├── i18n/         # en.ts, es.ts, hook
-│           └── styles/       # globals.css + temas
-└── apps/
-    └── demo/                 # Sandbox de desarrollo con Vite
+atoms/        Button, Input, Badge, Avatar, Spinner
+    |
+molecules/    MessageBubble, MessageInput, TypingIndicator, OrderCard...
+    |
+organisms/    ChatPanel, AgentInbox, ClientOrders, AdminUsers...
+    |
+templates/    FloatingWidget (componente raiz)
 ```
+
+Capas de soporte (sin restriccion de jerarquia):
+
+```
+hooks/        useSocket, useChat, useAuth, useOrders
+lib/          api.ts, socket.ts
+store/        authStore (Zustand)
+i18n/         en.ts, es.ts, hook useI18n
+styles/       globals.css (tokens Tailwind v4 @theme), themes/
+```
+

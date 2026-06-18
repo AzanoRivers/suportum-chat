@@ -1,0 +1,207 @@
+/* Atom: ProjectLogo */
+.project-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.project-logo--sm {
+  width: 24px;
+  height: 24px;
+}
+.project-logo--md {
+  width: 40px;
+  height: 40px;
+}
+.project-logo--lg {
+  width: 64px;
+  height: 64px;
+}
+/* Solo aplica al logo subido por el proyecto, NO al fallback AzanoLogo */
+.project-logo img:not(.azano-logo),
+.project-logo--default svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.project-logo--default {
+  padding: 0;
+}
+.project-logo--default svg {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+}
+/* AzanoLogo: fuera del login-wrap, tamaño base */
+.project-logo--default .azano-logo {
+  display: block;
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Molecule: LogoUploader */
+.logo-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+.logo-uploader__row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.logo-uploader__preview {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-elevated);
+  padding: 4px;
+  overflow: hidden;
+}
+.logo-uploader__preview-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.logo-uploader__preview-default {
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+.logo-uploader__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+}
+.logo-uploader__upload-label {
+  display: inline-flex;
+  cursor: pointer;
+}
+.logo-uploader__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.logo-uploader__input:focus-visible + .logo-uploader__upload-btn {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.logo-uploader__input:disabled + .logo-uploader__upload-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.logo-uploader__upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  background: transparent;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 150ms ease-out, color 150ms ease-out;
+  min-height: 36px;
+}
+.logo-uploader__upload-btn:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+.logo-uploader__error {
+  font-size: 0.75rem;
+  color: var(--color-status-cancelled);
+  margin: 0;
+}
+.logo-uploader__hint {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Setup Wizard: uploader wrap */
+.setup-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-elevated);
+}
+.setup-logo-wrap__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+/* LoginView / RegisterView / LoadingScreen: logo wrap */
+.login-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+/* Uploaded project logo: landscape slot */
+.login-logo-wrap .project-logo--md {
+  width: auto;
+  max-width: 260px;
+  height: 110px;
+}
+@keyframes login-neon-flicker {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 3px rgba(255, 255, 255, 0.25))
+      drop-shadow(0 0 6px rgba(255, 105, 180, 0.42))
+      drop-shadow(0 0 7px rgba(11, 210, 255, 0.45));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 4px rgba(255, 255, 255, 0.38))
+      drop-shadow(0 0 9px rgba(255, 105, 180, 0.58))
+      drop-shadow(0 0 10px rgba(11, 210, 255, 0.62));
+  }
+}
+
+.login-logo-wrap .project-logo--default {
+  width: auto;
+  height: auto;
+}
+.login-logo-wrap .project-logo--default .azano-logo {
+  display: block;
+  height: 112px;
+  width: auto;
+  border-radius: 8px;
+  animation: login-neon-flicker 7.4s ease-in-out infinite;
+}
+
+/* ChatHeader: slot del logo */
+.chat-header__logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 4px;
+}

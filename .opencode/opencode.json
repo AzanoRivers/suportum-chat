@@ -1,0 +1,54 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "system",
+  "provider": {
+    "opencode": {
+      "options": {
+        "setCacheKey": true
+      }
+    }
+  },
+  "model": "opencode/minimax-m3",
+  "agent": {
+    "orchestrer": {
+      "description": "Orchestrer del proyecto Suportum. Coordina el desarrollo feature por feature leyendo .claude/AGENTS.md, .claude/feature_list.json y el plan maestro. NO escribe código de producción directamente: delega al implementer, team-uiux, team-logic y valida con el reviewer. Hilo principal: puede invocar subagentes via Task tool. Subagentes NO pueden spawnar otros subagentes.",
+      "mode": "primary",
+      "model": "opencode/minimax-m3",
+      "temperature": 0.1,
+      "prompt": "{file:./prompts/orchestrer.txt}",
+      "color": "primary",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "skill": "allow",
+        "task": {
+          "implementer": "allow",
+          "team-uiux": "allow",
+          "team-logic": "allow",
+          "reviewer": "allow"
+        }
+      }
+    },
+    "build": {
+      "permission": {
+        "edit": "ask",
+        "bash": "ask",
+        "webfetch": "allow"
+      }
+    },
+    "plan": {
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "webfetch": "allow"
+      }
+    }
+  },
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "webfetch": "allow",
+    "skill": "allow"
+  }
+}

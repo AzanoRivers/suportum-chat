@@ -1,4 +1,8 @@
 .theme-light-clean {
+  --sb-thumb:       rgba(0, 102, 204, 0.25);
+  --sb-thumb-hover: rgba(0, 102, 204, 0.50);
+  --sb-track:       rgba(200, 208, 240, 0.5);
+
   --color-bg-base:      #f8f8fc;
   --color-bg-surface:   #ffffff;
   --color-bg-elevated:  #f0f0f8;

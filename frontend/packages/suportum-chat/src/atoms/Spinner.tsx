@@ -3,6 +3,7 @@ type SpinnerSize = 'sm' | 'md' | 'lg'
 interface SpinnerProps {
   size?: SpinnerSize
   className?: string
+  label?: string
 }
 
 const sizeClasses: Record<SpinnerSize, string> = {
@@ -11,14 +12,14 @@ const sizeClasses: Record<SpinnerSize, string> = {
   lg: 'w-8 h-8 border-[3px]',
 }
 
-export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
+export function Spinner({ size = 'md', className = '', label = 'Loading' }: SpinnerProps) {
   return (
     <span
       role="status"
-      aria-label="Loading"
+      aria-label={label}
       className={[
         'inline-block rounded-full animate-spin',
-        'border-[--color-border-default] border-t-[--color-accent]',
+        'border-(--color-border-default) border-t-(--color-accent)',
         sizeClasses[size],
         className,
       ]

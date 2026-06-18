@@ -58,6 +58,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     throw new ApiError(body?.error?.code ?? 'INTERNAL_ERROR', response.status)
   }
 
+  if (response.status === 204 || response.headers.get('content-length') === '0') {
+    return undefined as T
+  }
+
   return response.json()
 }
 

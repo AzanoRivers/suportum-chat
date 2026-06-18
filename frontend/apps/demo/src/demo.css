@@ -1,0 +1,73 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: #041528;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.demo-root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #041528;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 25px 25px;
+  position: relative;
+}
+
+.demo-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.demo-logo-wrap {
+  width: 160px;
+  height: 160px;
+  position: relative;
+}
+
+.demo-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 5px rgba(255, 255, 255, 0.5))
+    drop-shadow(0 -3px 8px rgba(255, 105, 180, 0.7))
+    drop-shadow(0 3px 8px rgba(11, 210, 255, 0.8))
+    drop-shadow(0 4px 14px rgba(11, 210, 255, 0.6));
+  animation: neonFlicker 7.4s ease-in-out infinite;
+}
+
+.demo-hint {
+  font-family: system-ui, sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 360px) {
+  .demo-logo-wrap { width: 200px; height: 200px; }
+  .demo-root { background-size: 35px 35px; }
+}
+
+@media (min-width: 440px) {
+  .demo-logo-wrap { width: 280px; height: 280px; }
+  .demo-root { background-size: 40px 40px; }
+}
+
+@keyframes neonFlicker {
+  0%, 55%, 59%, 74%, 78%, 100% { opacity: 1; }
+  56%, 58%                       { opacity: 0.7; }
+  75%, 77%                       { opacity: 0.85; }
+}

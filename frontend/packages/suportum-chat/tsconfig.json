@@ -9,7 +9,9 @@
     "declaration": true,
     "declarationMap": true,
     "skipLibCheck": true,
-    "outDir": "dist"
+    "rootDir": "src",
+    "outDir": "dist",
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"]
 }

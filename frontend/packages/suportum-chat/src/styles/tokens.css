@@ -1,0 +1,50 @@
+:root {
+  /* Scrollbar: Dragon OS dark (override en .theme-light-clean) */
+  --sb-thumb:       rgba(79, 195, 255, 0.22);
+  --sb-thumb-hover: rgba(79, 195, 255, 0.48);
+  --sb-track:       transparent;
+
+  /* Dragon OS: deep blue palette */
+  --color-bg-base:     #030B3A;
+  --color-bg-surface:  #0A1E72;
+  --color-bg-elevated: #112884;
+  --color-bg-overlay:  rgba(7, 24, 93, 0.94);
+  --color-bg-glass:    rgba(10, 30, 114, 0.88);
+
+  --color-border-subtle:  rgba(255, 255, 255, 0.06);
+  --color-border-default: rgba(255, 255, 255, 0.14);
+  --color-border-strong:  rgba(255, 255, 255, 0.28);
+
+  --color-text-primary:   #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.70);
+  --color-text-muted:     rgba(255, 255, 255, 0.40);
+  --color-text-label:     rgba(255, 255, 255, 0.35);
+
+  --color-accent:       #4FC3FF;
+  --color-accent-dim:   rgba(79, 195, 255, 0.10);
+  --color-accent-hover: #79D8FF;
+  --color-accent-glow:  rgba(79, 195, 255, 0.15);
+
+  --color-status-pending:   #FFC857;
+  --color-status-active:    #00F5B0;
+  --color-status-taken:     #A78BFA;
+  --color-status-completed: #00F5B0;
+  --color-status-cancelled: #FF5A7A;
+  --color-warning:          #FFC857;
+
+  --color-text-on-accent: #000814;
+  --color-toggle-knob:    #ffffff;
+
+  --font-ui:   'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --radius-sm:  8px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+
+  --ease-fast: 150ms ease-out;
+  --ease-base: 200ms ease-out;
+
+  --color-overlay:       rgba(3, 11, 58, 0.75);
+  --color-overlay-heavy: rgba(3, 11, 58, 0.94);
+}
