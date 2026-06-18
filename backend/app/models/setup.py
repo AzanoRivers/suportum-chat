@@ -66,11 +66,6 @@ class SlugCheckResponse(BaseModel):
     available: bool
 
 
-class SetupStatusResponse(BaseModel):
-    done: bool
-    api_key: Optional[str] = None
-
-
 class HealthResponse(BaseModel):
     status: str
     version: str

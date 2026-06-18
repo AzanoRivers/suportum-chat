@@ -48,23 +48,12 @@ export function WidgetShell({ apiUrl, apiKey: initialApiKey, onClose, onSetupCom
   const isMountedRef = useRef(false)
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/v1/setup/status`)
-      .then(r => r.json() as Promise<{ done: boolean; api_key?: string }>)
-      .then(data => {
-        if (data.done && data.api_key) {
-          setCurrentApiKey(data.api_key)
-          onSetupComplete?.(data.api_key)
-          setShellStatus('ready')
-        } else {
-          setCurrentApiKey('')
-          onProjectReset?.()
-          setShellStatus('setup')
-        }
-      })
-      .catch(() => {
-        if (initialApiKey) setShellStatus('ready')
-        else setShellStatus('setup')
-      })
+    if (initialApiKey) {
+      setShellStatus('ready')
+    } else {
+      onProjectReset?.()
+      setShellStatus('setup')
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Habilita la transición solo cuando el cambio de token fue user-initiated

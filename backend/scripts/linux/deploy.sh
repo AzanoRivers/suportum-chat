@@ -23,7 +23,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 
 SERVICE_NAME="suportum"
-GIT_BRANCH="main"
+GIT_BRANCH="master"
 VENV_DIR=".venv"
 REQUIREMENTS="requirements.txt"
 HASH_FILE=".requirements.hash"

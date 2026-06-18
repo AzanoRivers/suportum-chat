@@ -17,7 +17,6 @@ from app.models.setup import (
     HealthResponse,
     SetupCreateRequest,
     SetupCreateResponse,
-    SetupStatusResponse,
     SlugCheckResponse,
 )
 from app.services.email import send_user_welcome
@@ -36,17 +35,6 @@ def _make_slug(name: str) -> str:
     slug = re.sub(r"-+", "-", slug)
     slug = slug.strip("-")[:40]
     return slug or "project"
-
-
-@router.get("/status", response_model=SetupStatusResponse)
-async def setup_status(
-    db: aiosqlite.Connection = Depends(get_db),
-) -> SetupStatusResponse:
-    async with db.execute("SELECT api_key FROM projects LIMIT 1") as cur:
-        row = await cur.fetchone()
-    if row:
-        return SetupStatusResponse(done=True, api_key=row[0])
-    return SetupStatusResponse(done=False)
 
 
 @router.get("/branding")
@@ -106,11 +94,6 @@ async def setup_create(
 
     if not check_rate_limit(f"setup:{client_ip}", 3, 86400):
         raise HTTPException(status_code=429, detail="RATE_LIMITED")
-
-    async with db.execute("SELECT COUNT(*) FROM projects") as cur:
-        row = await cur.fetchone()
-    if row and row[0] > 0:
-        raise HTTPException(status_code=409, detail="SETUP_ALREADY_DONE")
 
     # Resolver slug: usar el enviado o auto-generar desde el nombre
     if body.slug:

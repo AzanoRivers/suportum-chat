@@ -33,7 +33,7 @@ The system is composed of two independent packages:
 
 ### Getting Started
 
-See `backend/README.md` for server setup and `frontend/README.md` for widget integration.
+See `backend/README.md` for server setup and `frontend/README.md` for widget integration, including the first-time Setup Wizard flow and notes on why the API key is safe to embed in client-side code.
 
 ---
 
@@ -64,18 +64,6 @@ El sistema está compuesto por dos paquetes independientes:
 - Widget embebible con soporte de temas (oscuro, claro)
 - Interfaz bilingue: inglés y español
 
-### Mantener el widget actualizado
-
-El widget recibe actualizaciones frecuentes con correcciones y mejoras. Para obtener la ultima version en tu proyecto:
-
-```bash
-npm update suportum-chat
-# o: pnpm update suportum-chat
-# o: yarn upgrade suportum-chat
-```
-
-No se requieren cambios en tu codigo después de actualizar. Los estilos y la logica siempre vienen empaquetados juntos.
-
 ### Primeros pasos
 
-Ver `backend/README.md` para configurar el servidor y `frontend/README.md` para la integración del widget.
+Ver `backend/README.md` para configurar el servidor y `frontend/README.md` para la integracion del widget, incluyendo el flujo del Setup Wizard de primer uso y las notas sobre por que la API key es segura en el codigo del cliente.

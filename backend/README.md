@@ -13,16 +13,16 @@ REST API and WebSocket server for Suportum. Built with FastAPI, python-socketio,
 ### Requirements
 
 - Python 3.9+ (production VPS runs Python 3.9)
-- All dependencies installed inside `.venv` — never globally
+- All dependencies installed inside `.venv`, never globally
 
 ### Setup (Windows PowerShell)
 
 ```powershell
-# Create virtual environment — NEVER install packages globally
+# Create virtual environment. NEVER install packages globally
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
-# Install dependencies (no version pins — always latest)
+# Install dependencies (no version pins, always latest)
 pip install fastapi[standard] python-socketio aiosqlite python-jose passlib gunicorn uvicorn pillow pydantic-settings email-validator
 
 # Copy environment file and fill in values
@@ -33,7 +33,7 @@ Copy-Item .env.example .env
 uvicorn app.main:socket_app --reload --port 8001
 ```
 
-### Development Server — Process Management
+### Development Server: Process Management
 
 The dev server runs as a **blocking process** in the terminal. To stop it: `Ctrl+C`.
 
@@ -88,7 +88,7 @@ mkdir -p /home/opc/suportum-data/db /home/opc/suportum-data/uploads
 ### Production Deployment
 
 ```bash
-# VPS — set DATABASE_URL and UPLOAD_DIR in .env first
+# VPS: set DATABASE_URL and UPLOAD_DIR in .env first
 gunicorn app.main:socket_app \
   -k uvicorn.workers.UvicornWorker \
   --workers 1 \
@@ -196,7 +196,7 @@ Servidor REST y WebSocket para Suportum. Construido con FastAPI, python-socketio
 ### Configuración (Windows PowerShell)
 
 ```powershell
-# Crear entorno virtual — JAMAS instalar paquetes globalmente
+# Crear entorno virtual. JAMAS instalar paquetes globalmente
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
@@ -211,7 +211,7 @@ Copy-Item .env.example .env
 uvicorn app.main:socket_app --reload --port 8001
 ```
 
-### Servidor de Desarrollo — Gestion de Procesos
+### Servidor de Desarrollo: Gestion de Procesos
 
 El servidor corre como un **proceso bloqueante** en la terminal. Para detenerlo: `Ctrl+C`.
 
@@ -264,7 +264,7 @@ mkdir -p /home/opc/suportum-data/db /home/opc/suportum-data/uploads
 ### Despliegue en Producción
 
 ```bash
-# VPS — configurar DATABASE_URL y UPLOAD_DIR en .env primero
+# VPS: configurar DATABASE_URL y UPLOAD_DIR en .env primero
 gunicorn app.main:socket_app \
   -k uvicorn.workers.UvicornWorker \
   --workers 1 \

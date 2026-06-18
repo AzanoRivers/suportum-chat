@@ -8,13 +8,13 @@
 
 ### Overview
 
-`suportum-chat` is a React widget package for embedding real-time support, ticket management, and order tracking into any web application. It connects to a Suportum backend and automatically adapts its interface based on the authenticated user's role.
+`suportum-chat` is a React widget package for embedding real-time support, ticket management, and order tracking into any web application. It connects to a Suportum backend and automatically adapts its interface based on the authenticated user role.
 
 ---
 
 ### Why are there 3 `package.json` files?
 
-This folder is a **pnpm monorepo** — a single repository that holds 3 separate projects, each with its own `package.json`:
+This folder is a **pnpm monorepo**: a single repository that holds 3 separate projects, each with its own `package.json`:
 
 ```
 frontend/                          <-- (1) Monorepo root
@@ -33,9 +33,9 @@ frontend/                          <-- (1) Monorepo root
 ```
 
 **In short:**
-- `(1)` is plumbing — run commands from here, nothing more.
-- `(2)` is the real product — the npm package with all React components.
-- `(3)` is your local browser preview — open `localhost:5173` and see the widget live while developing.
+- `(1)` is plumbing: run commands from here, nothing more.
+- `(2)` is the real product: the npm package with all React components.
+- `(3)` is your local browser preview: open `localhost:5173` and see the widget live while developing.
 
 Only `(2)` ever gets published to npm. Projects `(1)` and `(3)` exist only to make development easier.
 
@@ -57,7 +57,39 @@ npm update suportum-chat
 pnpm update suportum-chat
 ```
 
-No configuration changes needed after updating. Styles, logic, and components are bundled together in one JS file — the update is atomic.
+No configuration changes needed after updating. Styles, logic, and components are bundled together in one JS file; the update is atomic.
+
+---
+
+### First-time setup
+
+If no `apiKey` is provided, the widget displays a built-in Setup Wizard that creates the project and generates the key.
+
+```tsx
+// First run: omit apiKey to trigger the Setup Wizard
+<SuportumChat apiUrl="https://your-backend.example.com" />
+
+// After setup: pass the key you received from the wizard
+<SuportumChat
+  apiUrl="https://your-backend.example.com"
+  apiKey="sproj_4f3a..."
+/>
+```
+
+The wizard covers three steps: project name and logo, admin account creation, and key display. Once complete, the widget transitions directly to the login screen.
+
+---
+
+### About the API key
+
+The `apiKey` is a **public project identifier**, not a secret. It is safe and intentional to embed it in client-side code.
+
+With the API key alone, nobody can:
+- Read messages, tickets, or orders from your project
+- Impersonate any user
+- Access data from another project
+
+The key only identifies which project the widget belongs to. All data access requires a valid user account (email and password). This is the same model used by Firebase, Intercom, Crisp, and Pusher: all embed a public project identifier in client-side JavaScript.
 
 ---
 
@@ -76,7 +108,7 @@ export default function App() {
 }
 ```
 
-> No CSS import needed — styles are injected automatically when the widget mounts.
+> No CSS import needed. Styles are injected automatically when the widget mounts.
 
 The widget renders a floating button. When opened, users sign in and the UI adapts to their role: `client` sees the chat, `agent` sees tickets and direct messages, `admin` sees full management panels.
 
@@ -87,7 +119,7 @@ The widget renders a floating button. When opened, users sign in and the UI adap
 | Prop | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `apiUrl` | `string` | Yes | | Base URL of the Suportum backend |
-| `apiKey` | `string` | Yes | | Project API key from the admin panel |
+| `apiKey` | `string` | No | | Project API key. Omit to show the first-time Setup Wizard |
 | `position` | `'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | No | `'bottom-right'` | Widget button position |
 | `theme` | `'dark-dragon' \| 'light-clean'` | No | `'dark-dragon'` | Visual theme |
 | `locale` | `'en' \| 'es'` | No | `'en'` | Language for the widget interface |
@@ -115,7 +147,7 @@ All commands run from the **monorepo root** (`frontend/`):
 # 1. Install all workspace dependencies (run once after cloning)
 pnpm install
 
-# 2. Start the demo app at localhost:5173 — see the widget live
+# 2. Start the demo app at localhost:5173 to see the widget live
 pnpm dev
 
 # 3. Build the publishable package (output: packages/suportum-chat/dist/)
@@ -200,7 +232,7 @@ styles/       globals.css (Tailwind v4 @theme tokens), themes/
 
 ### Por que hay 3 archivos `package.json`?
 
-Esta carpeta es un **monorepo pnpm** — un solo repositorio que contiene 3 proyectos separados, cada uno con su propio `package.json`:
+Esta carpeta es un **monorepo pnpm**: un solo repositorio que contiene 3 proyectos separados, cada uno con su propio `package.json`:
 
 ```
 frontend/                          <-- (1) Raiz del monorepo
@@ -247,6 +279,38 @@ No hacen falta cambios de configuracion al actualizar. Estilos, logica y compone
 
 ---
 
+### Primer setup
+
+Si no se pasa `apiKey`, el widget muestra un Setup Wizard integrado que crea el proyecto y genera la clave.
+
+```tsx
+// Primer uso: omitir apiKey para mostrar el Setup Wizard
+<SuportumChat apiUrl="https://tu-backend.ejemplo.com" />
+
+// Despues del setup: pasar la clave que recibiste del wizard
+<SuportumChat
+  apiUrl="https://tu-backend.ejemplo.com"
+  apiKey="sproj_4f3a..."
+/>
+```
+
+El wizard cubre tres pasos: nombre y logo del proyecto, creacion de la cuenta admin, y visualizacion de la clave. Al terminar, el widget pasa directamente a la pantalla de login.
+
+---
+
+### Sobre la API key
+
+La `apiKey` es un **identificador publico del proyecto**, no un secreto. Es seguro e intencional incluirla en el codigo del cliente.
+
+Solo con la API key, nadie puede:
+- Leer mensajes, tickets ni ordenes de tu proyecto
+- Suplantar a ningun usuario
+- Acceder a datos de otro proyecto
+
+La clave solo identifica a que proyecto pertenece el widget. Todo acceso a datos requiere una cuenta de usuario valida (email y contrasena). Este es el mismo modelo que usan Firebase, Intercom, Crisp y Pusher: todos incluyen un identificador publico de proyecto en el JavaScript del cliente.
+
+---
+
 ### Uso basico
 
 ```tsx
@@ -262,7 +326,7 @@ export default function App() {
 }
 ```
 
-> No hace falta importar CSS: los estilos se inyectan automaticamente cuando el widget monta.
+> No hace falta importar CSS. Los estilos se inyectan automaticamente cuando el widget monta.
 
 ---
 
@@ -271,7 +335,7 @@ export default function App() {
 | Prop | Tipo | Requerido | Por defecto | Descripcion |
 |---|---|---|---|---|
 | `apiUrl` | `string` | Si | | URL base del backend Suportum |
-| `apiKey` | `string` | Si | | Clave de API del proyecto |
+| `apiKey` | `string` | No | | Clave de API del proyecto. Omitir para mostrar el Setup Wizard |
 | `position` | `'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | No | `'bottom-right'` | Posicion del boton flotante |
 | `theme` | `'dark-dragon' \| 'light-clean'` | No | `'dark-dragon'` | Tema visual |
 | `locale` | `'en' \| 'es'` | No | `'en'` | Idioma de la interfaz |
