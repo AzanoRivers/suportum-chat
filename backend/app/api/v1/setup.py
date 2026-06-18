@@ -3,6 +3,7 @@ import json
 import logging
 import re
 import secrets
+from datetime import datetime, timezone
 from sqlite3 import IntegrityError
 from uuid import uuid4
 
@@ -63,8 +64,20 @@ async def get_public_branding(
 
 
 @router.get("/health", response_model=HealthResponse)
-async def health() -> HealthResponse:
-    return HealthResponse(status="ok", version=settings.API_VERSION)
+async def health(request: Request) -> HealthResponse:
+    delta = datetime.now(timezone.utc) - request.app.state.started_at
+    total = int(delta.total_seconds())
+    days, rem = divmod(total, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes, seconds = divmod(rem, 60)
+    return HealthResponse(
+        name=settings.PROJECT_NAME,
+        version=settings.API_VERSION,
+        author="AzanoRivers",
+        status="ok",
+        uptime=f"{days}d {hours}h {minutes}m {seconds}s",
+        uptime_seconds=total,
+    )
 
 
 @router.get("/check-slug/{slug}", response_model=SlugCheckResponse)

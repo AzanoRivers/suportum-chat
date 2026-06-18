@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime, timezone
 from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -23,7 +24,8 @@ async def _message_cleanup_loop() -> None:
         await purge_old_messages()
 
 
-async def on_startup():
+async def on_startup(app: FastAPI):
+    app.state.started_at = datetime.now(timezone.utc)
     Path(settings.DATABASE_URL).parent.mkdir(parents=True, exist_ok=True)
     Path(settings.UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
     await run_migrations()
@@ -31,7 +33,7 @@ async def on_startup():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await on_startup()
+    await on_startup(app)
     from fastapi.staticfiles import StaticFiles
     app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
     tasks = [

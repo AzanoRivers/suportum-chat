@@ -67,5 +67,9 @@ class SlugCheckResponse(BaseModel):
 
 
 class HealthResponse(BaseModel):
-    status: str
+    name: str
     version: str
+    author: str
+    status: str
+    uptime: str
+    uptime_seconds: int
