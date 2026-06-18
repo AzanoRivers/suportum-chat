@@ -28,7 +28,7 @@ async def get_scoped_project(
     role: str = token_payload.get("role", "")
 
     async with db.execute(
-        "SELECT id FROM projects WHERE id = ? AND is_active = 1",
+        "SELECT id, name FROM projects WHERE id = ? AND is_active = 1",
         (project_id,),
     ) as cursor:
         project_row = await cursor.fetchone()

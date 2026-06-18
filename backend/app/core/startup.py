@@ -3,7 +3,7 @@ from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.config import settings
-from app.database import run_migrations
+from app.database import run_migrations, close_db
 from app.core.rate_limit import evict_stale_buckets
 from app.core.cleanup import purge_old_messages, _24_HOURS
 
@@ -41,3 +41,5 @@ async def lifespan(app: FastAPI):
     yield
     for t in tasks:
         t.cancel()
+    await asyncio.gather(*tasks, return_exceptions=True)
+    await close_db()

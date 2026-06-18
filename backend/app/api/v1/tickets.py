@@ -16,7 +16,7 @@ from uuid import uuid4
 
 import aiosqlite
 from fastapi import APIRouter, Depends, HTTPException, Response
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.core.guards import get_scoped_project
 from app.core.project import get_project_by_id
@@ -61,8 +61,8 @@ def validate_transition(current: str, new: str, role: str) -> bool:
 # ---------------------------------------------------------------------------
 
 class CreateTicketRequest(BaseModel):
-    title: str
-    description: Optional[str] = None
+    title: str = Field(..., min_length=1, max_length=200)
+    description: Optional[str] = Field(None, max_length=2000)
     priority: Optional[str] = "normal"
 
 

@@ -17,6 +17,13 @@ async def get_db() -> aiosqlite.Connection:
     return _db
 
 
+async def close_db() -> None:
+    global _db
+    if _db is not None:
+        await _db.close()
+        _db = None
+
+
 async def run_migrations():
     db = await get_db()
     sql_path = Path(__file__).parent.parent / "migrations" / "001_initial.sql"

@@ -1,22 +1,31 @@
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
 from fastapi import HTTPException
 from jose import JWTError, ExpiredSignatureError, jwt
-from passlib.context import CryptContext
 
 from app.config import settings
 
 ALGORITHM = "HS256"
 
-_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt trunca silenciosamente en 72 bytes; lo hacemos explícito para evitar
+# el ValueError que bcrypt 4.x lanza en passlib.detect_wrap_bug.
+_BCRYPT_MAX = 72
+
+
+def _to_bytes(plain: str) -> bytes:
+    return plain.encode("utf-8")[:_BCRYPT_MAX]
 
 
 def hash_password(plain: str) -> str:
-    return _pwd_context.hash(plain)
+    return bcrypt.hashpw(_to_bytes(plain), bcrypt.gensalt()).decode()
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return _pwd_context.verify(plain, hashed)
+    try:
+        return bcrypt.checkpw(_to_bytes(plain), hashed.encode())
+    except Exception:
+        return False
 
 
 def _build_token(payload: dict, expire_delta: timedelta) -> str:

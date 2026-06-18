@@ -7,6 +7,7 @@ MESSAGE_RETENTION_DAYS. Runs at startup and every 24 hours.
 attachments rows are removed automatically via ON DELETE CASCADE in SQLite.
 Physical files on disk must be deleted explicitly before the DB rows are gone.
 """
+import asyncio
 import logging
 import os
 from pathlib import Path
@@ -45,19 +46,12 @@ async def purge_old_messages() -> None:
 
     await db.commit()
 
-    # Remove physical files from disk
-    deleted_files = 0
-    for filename, room_id in old_attachments:
-        # Path mirrors upload.py: UPLOAD_DIR/chat/<room_id>/<year>/<month>/<file>
-        # filename already contains the UUID name; search under the room subtree.
-        room_dir = Path(settings.UPLOAD_DIR) / "chat" / room_id
-        file_path = _find_file(room_dir, filename)
-        if file_path and file_path.exists():
-            try:
-                file_path.unlink()
-                deleted_files += 1
-            except OSError:
-                logger.warning("Could not delete attachment file: %s", file_path)
+    # Remove physical files from disk en un thread para no bloquear el event loop
+    if old_attachments:
+        upload_dir = settings.UPLOAD_DIR
+        deleted_files = await asyncio.to_thread(_delete_attachment_files, old_attachments, upload_dir)
+    else:
+        deleted_files = 0
 
     if deleted_rows:
         logger.info(
@@ -66,6 +60,21 @@ async def purge_old_messages() -> None:
             deleted_files,
             retention,
         )
+
+
+def _delete_attachment_files(attachments: List[Tuple[str, str]], upload_dir: str) -> int:
+    """Elimina los archivos fisicos de disco. Sincrono; llamar con asyncio.to_thread."""
+    deleted = 0
+    for filename, room_id in attachments:
+        room_dir = Path(upload_dir) / "chat" / room_id
+        file_path = _find_file(room_dir, filename)
+        if file_path and file_path.exists():
+            try:
+                file_path.unlink()
+                deleted += 1
+            except OSError:
+                logger.warning("Could not delete attachment file: %s", file_path)
+    return deleted
 
 
 def _find_file(base_dir: Path, filename: str) -> Optional[Path]:

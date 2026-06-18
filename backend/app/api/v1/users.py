@@ -7,6 +7,7 @@ POST   /users              : crea usuario (solo admin); hashea password
 PATCH  /users/{user_id}    : actualiza usuario; admin puede todo; usuario solo username/password
 DELETE /users/{user_id}    : soft delete (is_active=0); solo admin; admin no puede borrarse a si mismo
 """
+import asyncio
 import logging
 from typing import Optional, List
 from uuid import uuid4
@@ -21,6 +22,7 @@ from app.core.auth import hash_password
 from app.core.errors import error_response
 from app.core.utils import now_iso
 from app.database import get_db
+from app.services.email import send_user_welcome
 
 logger = logging.getLogger("suportum")
 
@@ -176,7 +178,19 @@ async def create_user(
     if row is None:
         return error_response("INTERNAL_ERROR", 500)
 
-    return {"user": _row_to_user(row)}
+    created_user = _row_to_user(row)
+
+    # Envía correo de bienvenida con credenciales — fire-and-forget, nunca bloquea la respuesta
+    asyncio.create_task(
+        send_user_welcome(
+            email=created_user["email"],
+            username=created_user["username"],
+            password=body.password,
+            project_name=scoped["project"].get("name", ""),
+        )
+    )
+
+    return {"user": created_user}
 
 
 # ---------------------------------------------------------------------------

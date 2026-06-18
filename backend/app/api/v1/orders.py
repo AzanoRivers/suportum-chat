@@ -17,7 +17,7 @@ from uuid import uuid4
 
 import aiosqlite
 from fastapi import APIRouter, Depends, HTTPException, Response, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.core.guards import get_scoped_project
 from app.core.errors import error_response
@@ -69,8 +69,8 @@ def validate_order_transition(current: str, new: str, role: str) -> bool:
 # ---------------------------------------------------------------------------
 
 class CreateOrderRequest(BaseModel):
-    type: str
-    title: str
+    type: str = Field(..., min_length=1, max_length=100)
+    title: str = Field(..., min_length=1, max_length=200)
     details: Optional[Dict[str, Any]] = None
 
 

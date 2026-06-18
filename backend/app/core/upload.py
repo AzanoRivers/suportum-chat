@@ -66,11 +66,9 @@ def compress_to_webp(
     Esta funcion es SINCRONA. Llamar con asyncio.to_thread desde contextos async.
     """
     with Image.open(io.BytesIO(data)) as img:
-        # Aplanar transparencia sobre fondo blanco antes de guardar como RGB WebP
-        if img.mode in ("RGBA", "LA"):
-            background = Image.new("RGB", img.size, (255, 255, 255))
-            background.paste(img, mask=img.split()[-1])
-            img = background
+        # WebP soporta alpha — preservar canal de transparencia
+        if img.mode in ("RGBA", "LA", "P"):
+            img = img.convert("RGBA")
         elif img.mode != "RGB":
             img = img.convert("RGB")
 
@@ -124,6 +122,38 @@ def safe_upload_path(
     target_dir.mkdir(parents=True, exist_ok=True)
 
     filename = str(uuid.uuid4()) + ".webp"
+    file_path = target_dir / filename
+
+    return file_path, filename
+
+
+def safe_branding_path(
+    upload_dir: str,
+    project_id: str,
+) -> Tuple[Path, str]:
+    """
+    Construye la ruta de destino para el logo de un proyecto, con proteccion
+    contra path traversal.
+
+    - upload_dir : directorio base (Settings.UPLOAD_DIR)
+    - project_id : id del proyecto (UUID); se sanitiza
+
+    Estructura: UPLOAD_DIR/{project_id}/branding/logo-{uuid}.webp
+
+    Retorna (path_absoluto_al_archivo, nombre_del_archivo).
+    """
+    safe_project = _sanitize_segment(project_id)
+
+    base = Path(upload_dir).resolve()
+    target_dir = (base / safe_project / "branding").resolve()
+
+    # Proteccion path traversal: el directorio target debe estar dentro de base
+    if not str(target_dir).startswith(str(base)):
+        raise ValueError("Path traversal detectado en safe_branding_path")
+
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    filename = "logo-" + uuid.uuid4().hex + ".webp"
     file_path = target_dir / filename
 
     return file_path, filename

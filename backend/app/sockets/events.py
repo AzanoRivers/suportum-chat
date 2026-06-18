@@ -8,8 +8,11 @@ El objeto sio se importa desde app.sockets.server para que python-socketio
 registre los handlers en la misma instancia que monta el ASGI app.
 """
 import logging
+import re
 import uuid
 from typing import Optional
+
+_ROOM_ID_RE = re.compile(r"^[a-zA-Z0-9_:\-]{1,100}$")
 
 from app.sockets.server import sio
 from app.core.auth import decode_token
@@ -41,7 +44,7 @@ async def _emit_error(sid: str, code: str, namespace: str) -> None:
 # ---------------------------------------------------------------------------
 
 @sio.on("connect", namespace="*")
-async def on_connect(sid: str, environ: dict, auth: Optional[dict], namespace: str) -> bool:
+async def on_connect(namespace: str, sid: str, environ: dict, auth: Optional[dict] = None) -> bool:
     """
     Valida el token JWT y el api_key del namespace.
     Retorna False para rechazar la conexion.
@@ -103,10 +106,17 @@ async def on_connect(sid: str, environ: dict, auth: Optional[dict], namespace: s
 # ---------------------------------------------------------------------------
 
 @sio.on("disconnect", namespace="*")
-async def on_disconnect(sid: str, namespace: str) -> None:
+async def on_disconnect(namespace: str, sid: str) -> None:
     """
     Al desconectar, envia typing stop a todos los rooms donde el usuario estaba activo.
     """
+    # Limpiar _connected antes de intentar leer la sesion (garantiza limpieza aunque falle get_session)
+    ns_map = _connected.get(namespace, {})
+    for uid, mapped_sid in list(ns_map.items()):
+        if mapped_sid == sid:
+            ns_map.pop(uid, None)
+            break
+
     try:
         session = await sio.get_session(sid, namespace=namespace)
     except Exception:
@@ -117,11 +127,6 @@ async def on_disconnect(sid: str, namespace: str) -> None:
 
     user_id: str = session.get("user_id", "")
     active_rooms = session.get("rooms", [])
-
-    # Limpiar el mapping de sid activo
-    ns_map = _connected.get(namespace, {})
-    if ns_map.get(user_id) == sid:
-        ns_map.pop(user_id, None)
 
     db = await get_db()
 
@@ -147,7 +152,7 @@ async def on_disconnect(sid: str, namespace: str) -> None:
 # ---------------------------------------------------------------------------
 
 @sio.on("room:join", namespace="*")
-async def on_room_join(sid: str, data: dict, namespace: str) -> None:
+async def on_room_join(namespace: str, sid: str, data: dict) -> None:
     session = await sio.get_session(sid, namespace=namespace)
     if not session:
         await _emit_error(sid, "AUTH_MISSING_TOKEN", namespace)
@@ -156,6 +161,10 @@ async def on_room_join(sid: str, data: dict, namespace: str) -> None:
     room_id: Optional[str] = data.get("room_id") if isinstance(data, dict) else None
     if not room_id:
         await _emit_error(sid, "VALIDATION_ERROR", namespace)
+        return
+
+    if not _ROOM_ID_RE.match(room_id):
+        await _emit_error(sid, "INVALID_ROOM_ID", namespace)
         return
 
     user_id: str = session["user_id"]
@@ -197,7 +206,7 @@ async def on_room_join(sid: str, data: dict, namespace: str) -> None:
 # ---------------------------------------------------------------------------
 
 @sio.on("room:leave", namespace="*")
-async def on_room_leave(sid: str, data: dict, namespace: str) -> None:
+async def on_room_leave(namespace: str, sid: str, data: dict) -> None:
     session = await sio.get_session(sid, namespace=namespace)
     if not session:
         return
@@ -225,7 +234,7 @@ async def on_room_leave(sid: str, data: dict, namespace: str) -> None:
 # ---------------------------------------------------------------------------
 
 @sio.on("message:send", namespace="*")
-async def on_message_send(sid: str, data: dict, namespace: str) -> None:
+async def on_message_send(namespace: str, sid: str, data: dict) -> None:
     session = await sio.get_session(sid, namespace=namespace)
     if not session:
         await _emit_error(sid, "AUTH_MISSING_TOKEN", namespace)
@@ -290,8 +299,9 @@ async def on_message_send(sid: str, data: dict, namespace: str) -> None:
         {
             "id": msg_id,
             "room_id": room_id,
-            "sender_id": user_id,
-            "sender_username": username,
+            "user_id": user_id,
+            "username": username,
+            "role": role,
             "content": content,
             "content_type": content_type,
             "created_at": created_at,
@@ -311,12 +321,12 @@ async def on_message_send(sid: str, data: dict, namespace: str) -> None:
 # ---------------------------------------------------------------------------
 
 @sio.on("typing:start", namespace="*")
-async def on_typing_start(sid: str, data: dict, namespace: str) -> None:
+async def on_typing_start(namespace: str, sid: str, data: dict) -> None:
     await _handle_typing(sid, data, namespace, active=True)
 
 
 @sio.on("typing:stop", namespace="*")
-async def on_typing_stop(sid: str, data: dict, namespace: str) -> None:
+async def on_typing_stop(namespace: str, sid: str, data: dict) -> None:
     await _handle_typing(sid, data, namespace, active=False)
 
 
@@ -348,7 +358,7 @@ async def _handle_typing(sid: str, data: dict, namespace: str, active: bool) -> 
 # ---------------------------------------------------------------------------
 
 @sio.on("direct:open", namespace="*")
-async def on_direct_open(sid: str, data: dict, namespace: str) -> None:
+async def on_direct_open(namespace: str, sid: str, data: dict) -> None:
     session = await sio.get_session(sid, namespace=namespace)
     if not session:
         await _emit_error(sid, "AUTH_MISSING_TOKEN", namespace)
@@ -413,6 +423,61 @@ async def on_direct_open(sid: str, data: dict, namespace: str) -> None:
 
 
 # ---------------------------------------------------------------------------
+# message:delete
+# ---------------------------------------------------------------------------
+
+@sio.on("message:delete", namespace="*")
+async def on_message_delete(namespace: str, sid: str, data: dict) -> None:
+    session = await sio.get_session(sid, namespace=namespace)
+    if not session:
+        await _emit_error(sid, "AUTH_MISSING_TOKEN", namespace)
+        return
+
+    if session.get("role") != "admin":
+        await _emit_error(sid, "FORBIDDEN", namespace)
+        return
+
+    if not isinstance(data, dict):
+        await _emit_error(sid, "VALIDATION_ERROR", namespace)
+        return
+
+    message_id: Optional[str] = data.get("message_id")
+    room_id: Optional[str] = data.get("room_id")
+
+    if not message_id or not room_id:
+        await _emit_error(sid, "VALIDATION_ERROR", namespace)
+        return
+
+    project_id: str = session["project_id"]
+    db = await get_db()
+
+    async with db.execute(
+        "SELECT id FROM messages WHERE id = ? AND project_id = ? AND room_id = ?",
+        (message_id, project_id, room_id),
+    ) as cursor:
+        row = await cursor.fetchone()
+
+    if not row:
+        await _emit_error(sid, "NOT_FOUND", namespace)
+        return
+
+    await db.execute("DELETE FROM messages WHERE id = ?", (message_id,))
+    await db.commit()
+
+    await sio.emit(
+        "message:deleted",
+        {"message_id": message_id, "room_id": room_id},
+        room=room_id,
+        namespace=namespace,
+    )
+
+    logger.info(
+        "message:delete admin=%s message=%s room=%s",
+        session["user_id"], message_id, room_id,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Helpers de base de datos
 # ---------------------------------------------------------------------------
 
@@ -443,7 +508,7 @@ async def _fetch_history(
     try:
         async with db.execute(
             "SELECT m.id, m.room_id, m.sender_id, u.username AS sender_username,"
-            " m.content, m.content_type, m.created_at"
+            " u.role AS sender_role, m.content, m.content_type, m.created_at"
             " FROM messages m"
             " JOIN users u ON m.sender_id = u.id"
             " WHERE m.project_id = ? AND m.room_id = ?"
@@ -458,11 +523,12 @@ async def _fetch_history(
             result.append({
                 "id": row[0],
                 "room_id": row[1],
-                "sender_id": row[2],
-                "sender_username": row[3],
-                "content": row[4],
-                "content_type": row[5],
-                "created_at": row[6],
+                "user_id": row[2],
+                "username": row[3],
+                "role": row[4],
+                "content": row[5],
+                "content_type": row[6],
+                "created_at": row[7],
             })
         return result
     except Exception:
