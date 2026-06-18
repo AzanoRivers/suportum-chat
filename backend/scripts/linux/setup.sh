@@ -80,9 +80,16 @@ if command -v sestatus &>/dev/null && sestatus 2>/dev/null | grep -q "enforcing"
 fi
 
 # -- Check .env ---------------------------------------------------------------
+ENV_JUST_CREATED=false
 if [ ! -f "$ENV_FILE" ]; then
-    warn ".env not found. Copy .env.example and fill in the values:"
-    warn "  cp ${PROJECT_DIR}/.env.example ${PROJECT_DIR}/.env && nano ${PROJECT_DIR}/.env"
+    if [ -f ".env.example" ]; then
+        cp .env.example "$ENV_FILE"
+        ENV_JUST_CREATED=true
+        warn ".env creado desde .env.example. Editalo con tus valores antes de arrancar:"
+        warn "  nano ${PROJECT_DIR}/.env"
+    else
+        warn ".env.example no encontrado. Creá .env manualmente antes de arrancar el servicio."
+    fi
 else
     info ".env found."
 fi
@@ -116,7 +123,11 @@ sudo systemctl enable "$SERVICE_NAME"
 info "Service '$SERVICE_NAME' registered and enabled."
 
 # -- Start the service --------------------------------------------------------
-if systemctl is-active --quiet "$SERVICE_NAME"; then
+if [ "$ENV_JUST_CREATED" = true ]; then
+    warn "Servicio NO iniciado: .env recién creado con valores de ejemplo."
+    warn "Editá ${PROJECT_DIR}/.env con tus valores y luego corré:"
+    warn "  sudo systemctl start $SERVICE_NAME"
+elif systemctl is-active --quiet "$SERVICE_NAME"; then
     warn "Service '$SERVICE_NAME' is already running. Skipping start."
 else
     info "Starting service '$SERVICE_NAME'..."
