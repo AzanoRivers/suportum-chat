@@ -1,13 +1,12 @@
 import { io, Socket } from 'socket.io-client'
 import { useAuthStore } from '../store/authStore'
-
-const API_URL = import.meta.env.VITE_SOCKET_URL ?? 'http://localhost:8001'
+import { getBaseUrl } from './config'
 
 let globalSocket: Socket | null = null
 
 export function getSocket(token: string, apiKey: string): Socket {
   if (!globalSocket) {
-    globalSocket = io(`${API_URL}/${apiKey}`, {
+    globalSocket = io(`${getBaseUrl()}/${apiKey}`, {
       auth: { token },
       transports: ['websocket'],
       reconnectionAttempts: 10,

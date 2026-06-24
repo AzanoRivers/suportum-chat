@@ -1,4 +1,4 @@
-:root {
+.suportum-root {
   /* Scrollbar: Dragon OS dark (override en .theme-light-clean) */
   --sb-thumb:       rgba(79, 195, 255, 0.22);
   --sb-thumb-hover: rgba(79, 195, 255, 0.48);

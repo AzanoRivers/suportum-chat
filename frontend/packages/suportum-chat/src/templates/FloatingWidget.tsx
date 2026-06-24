@@ -11,6 +11,7 @@ import { MinimizeContext } from '../atoms/MinimizeContext'
 import { useI18n, I18nProvider } from '../i18n'
 import { ThemeProvider } from '../providers/ThemeProvider'
 import { disconnectSocket } from '../lib/socket'
+import { setBaseUrl } from '../lib/config'
 import type { Locale } from '../i18n'
 
 type Theme = 'dark-dragon' | 'light-clean'
@@ -50,6 +51,7 @@ function SuportumChatInner({
   const { t } = useI18n()
   const { token, setSession } = useAuthStore()
   const { isOpen, isExpanded, isMinimized, open, close, restore, minimize: storeMinimize } = useWidgetStore()
+  useEffect(() => { setBaseUrl(apiUrl) }, [apiUrl])
   useAutoRefreshOnMount(apiUrl, Boolean(apiKey))
   useSessionVerifier(apiUrl)
 
@@ -267,11 +269,13 @@ export function SuportumChat({
   ...rest
 }: SuportumChatProps) {
   return (
-    <I18nProvider initialLocale={locale}>
-      <ThemeProvider initialTheme={theme}>
-        <SuportumChatInner position={position} {...rest} />
-      </ThemeProvider>
-    </I18nProvider>
+    <div className="suportum-root">
+      <I18nProvider initialLocale={locale}>
+        <ThemeProvider initialTheme={theme}>
+          <SuportumChatInner position={position} {...rest} />
+        </ThemeProvider>
+      </I18nProvider>
+    </div>
   )
 }
 

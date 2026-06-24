@@ -1,6 +1,5 @@
 import { useAuthStore } from '../store/authStore'
-
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8001'
+import { getBaseUrl } from './config'
 
 export class ApiError extends Error {
   constructor(public code: string, public status: number) {
@@ -10,7 +9,7 @@ export class ApiError extends Error {
 
 async function tryRefreshToken(): Promise<boolean> {
   try {
-    const res = await fetch(`${API_URL}/api/v1/auth/refresh`, {
+    const res = await fetch(`${getBaseUrl()}/api/v1/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
     })
@@ -28,7 +27,7 @@ async function tryRefreshToken(): Promise<boolean> {
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const { token } = useAuthStore.getState()
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${getBaseUrl()}${path}`, {
     ...options,
     credentials: 'include',
     headers: {
