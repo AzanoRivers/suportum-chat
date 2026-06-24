@@ -13,20 +13,20 @@
     cursor: pointer;
   }
 
-  @keyframes bar-shrink-from-expanded {
+  @keyframes suportum-bar-shrink {
     from { width: min(840px, 88vw); }
     to   { width: 430px; }
   }
   .bar-shrink-enter {
-    animation: bar-shrink-from-expanded 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: suportum-bar-shrink 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  @keyframes bar-grow-to-expanded {
+  @keyframes suportum-bar-grow {
     from { width: 430px; }
     to   { width: min(840px, 88vw); }
   }
   .bar-grow-exit {
-    animation: bar-grow-to-expanded 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: suportum-bar-grow 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
     pointer-events: none;
   }
 }

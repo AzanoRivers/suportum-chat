@@ -171,7 +171,7 @@
   max-width: 260px;
   height: 110px;
 }
-@keyframes login-neon-flicker {
+@keyframes suportum-neon-flicker {
   0%, 100% {
     filter:
       drop-shadow(0 0 3px rgba(255, 255, 255, 0.25))
@@ -195,7 +195,7 @@
   height: 112px;
   width: auto;
   border-radius: 8px;
-  animation: login-neon-flicker 7.4s ease-in-out infinite;
+  animation: suportum-neon-flicker 7.4s ease-in-out infinite;
 }
 
 /* ChatHeader: slot del logo */

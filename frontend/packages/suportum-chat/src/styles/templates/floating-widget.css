@@ -35,7 +35,7 @@
 .beacon {
   position: absolute; inset: 0; border-radius: 50%;
   border: 2px solid var(--color-accent);
-  animation: widget-beacon 2.8s ease-out infinite;
+  animation: suportum-beacon 2.8s ease-out infinite;
   pointer-events: none;
 }
 .chat-btn { position: relative; transition: transform 220ms ease-out, box-shadow 200ms ease-out, background-color 150ms ease-out; }
