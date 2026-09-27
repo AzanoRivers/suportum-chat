@@ -27,11 +27,15 @@ async function tryRefreshToken(): Promise<boolean> {
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const { token } = useAuthStore.getState()
 
+  // FormData (uploads multipart): el browser setea su propio Content-Type
+  // con el boundary correcto. Forzar 'application/json' rompe el parseo del body.
+  const isFormData = options.body instanceof FormData
+
   const response = await fetch(`${getBaseUrl()}${path}`, {
     ...options,
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
@@ -64,10 +68,34 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return response.json()
 }
 
+export type VerifyStatus = 'not_found' | 'ready' | 'domain_mismatch' | 'connection_error'
+
+// Endpoint publico (sin JWT), se llama con la apiUrl del widget host antes de que
+// exista sesion. A diferencia de `request()`, no pasa por getBaseUrl() ni por
+// apiClient: recibe apiUrl explicito, igual que useProjectBrandingPublic.
+// Si la request de red falla (backend caido, sin conexion) se resuelve como
+// 'connection_error', nunca como 'not_found' ni 'domain_mismatch': esos dos
+// implican que el backend si respondio con informacion de negocio.
+export async function verifyProject(apiUrl: string, apiKey: string): Promise<{ status: VerifyStatus }> {
+  try {
+    const res = await fetch(`${apiUrl}/api/v1/projects/verify?api_key=${encodeURIComponent(apiKey)}`)
+    if (!res.ok) return { status: 'connection_error' }
+
+    const data = await res.json() as { status?: string }
+    if (data.status === 'not_found' || data.status === 'ready' || data.status === 'domain_mismatch') {
+      return { status: data.status }
+    }
+    return { status: 'connection_error' }
+  } catch {
+    return { status: 'connection_error' }
+  }
+}
+
 export const apiClient = {
-  get:    <T>(path: string)                => request<T>(path),
-  post:   <T>(path: string, body: unknown) => request<T>(path, { method: 'POST',   body: JSON.stringify(body) }),
-  put:    <T>(path: string, body: unknown) => request<T>(path, { method: 'PUT',    body: JSON.stringify(body) }),
-  patch:  <T>(path: string, body: unknown) => request<T>(path, { method: 'PATCH',  body: JSON.stringify(body) }),
-  delete: <T>(path: string)               => request<T>(path, { method: 'DELETE' }),
+  get:      <T>(path: string)                        => request<T>(path),
+  post:     <T>(path: string, body: unknown)          => request<T>(path, { method: 'POST',   body: JSON.stringify(body) }),
+  postForm: <T>(path: string, formData: FormData)     => request<T>(path, { method: 'POST',   body: formData }),
+  put:      <T>(path: string, body: unknown)          => request<T>(path, { method: 'PUT',    body: JSON.stringify(body) }),
+  patch:    <T>(path: string, body: unknown)          => request<T>(path, { method: 'PATCH',  body: JSON.stringify(body) }),
+  delete:   <T>(path: string)                         => request<T>(path, { method: 'DELETE' }),
 }

@@ -13,7 +13,7 @@ export function OrdersColumn({ status, orders, onSelect }: OrdersColumnProps) {
 
   return (
     <div
-      className="flex flex-col min-w-[280px] max-w-[280px] flex-none snap-start"
+      className="flex flex-col min-w-70 max-w-70 flex-none snap-start"
     >
       <div className="flex items-center justify-between px-3 py-2 border-b border-(--color-border-subtle) bg-(--color-bg-surface) flex-none">
         <span className="text-xs font-medium uppercase tracking-wide text-(--color-text-muted)">

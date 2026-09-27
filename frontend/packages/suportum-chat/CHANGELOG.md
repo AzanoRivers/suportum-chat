@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+> Nota: `package.json` va en 0.1.7 (se bumpea en cada publish a npm, no siempre
+> hay un cambio grande detras de cada patch). El changelog no tenia entradas
+> entre 0.1.0 y 0.1.7, se retoma el registro desde aca. Bumpear a la version
+> que corresponda al publicar esto.
+
+- Project branding: logo del proyecto opcional en el Setup Wizard (paso 1) y
+  editable despues en AdminSettings. PNG/JPG/GIF/WebP, maximo 2MB, redimensionado
+  automatico a 512px, convertido a WebP.
+- Validacion de API Key + dominio: el widget consulta el backend antes de decidir
+  que pantalla mostrar. Si la API Key no existe en el servidor, muestra una
+  pantalla informativa en vez de asumir que hay que crear un proyecto nuevo. Si la
+  API Key es de otro dominio al que fue registrada, bloquea con una pantalla de
+  error, nunca intenta el login.
+- `locale` ahora acepta `'auto'` (o se puede omitir el prop): detecta el idioma
+  del navegador del visitante (ingles/espanol), y recuerda en `localStorage`
+  cualquier cambio manual de idioma hecho desde el toggle del propio widget.
+
 ## [0.1.0] - 2026-06-09
 
 Initial release.

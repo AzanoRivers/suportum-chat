@@ -42,7 +42,6 @@ export default function App() {
         apiKey={apiKey}
         position="bottom-right"
         buttonLabel="Chat - Suportum"
-        locale="en"
         onSetupComplete={handleSetupComplete}
         onProjectReset={handleProjectReset}
       />

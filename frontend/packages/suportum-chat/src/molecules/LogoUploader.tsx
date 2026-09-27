@@ -4,9 +4,7 @@ import { useI18n } from '../i18n'
 import { Button } from '../atoms/Button'
 import { Spinner } from '../atoms/Spinner'
 import { useProjectBranding } from '../hooks/useProjectBranding'
-
-const MAX_SIZE_BYTES = 2 * 1024 * 1024
-const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+import { MAX_LOGO_SIZE_BYTES, ALLOWED_LOGO_MIME_TYPES } from '../lib/constants'
 
 interface LogoUploaderProps {
   currentUrl?: string | null
@@ -27,11 +25,11 @@ export function LogoUploader({ currentUrl, apiUrl, onChange, disabled = false }:
     if (!file) return
     setLocalError(null)
 
-    if (file.size > MAX_SIZE_BYTES) {
+    if (file.size > MAX_LOGO_SIZE_BYTES) {
       setLocalError('errors.UPLOAD_TOO_LARGE')
       return
     }
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!ALLOWED_LOGO_MIME_TYPES.includes(file.type as typeof ALLOWED_LOGO_MIME_TYPES[number])) {
       setLocalError('errors.UPLOAD_TYPE_NOT_SUPPORTED')
       return
     }

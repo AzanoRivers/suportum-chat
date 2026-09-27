@@ -66,7 +66,7 @@ def compress_to_webp(
     Esta funcion es SINCRONA. Llamar con asyncio.to_thread desde contextos async.
     """
     with Image.open(io.BytesIO(data)) as img:
-        # WebP soporta alpha — preservar canal de transparencia
+        # WebP soporta alpha: preservar canal de transparencia
         if img.mode in ("RGBA", "LA", "P"):
             img = img.convert("RGBA")
         elif img.mode != "RGB":

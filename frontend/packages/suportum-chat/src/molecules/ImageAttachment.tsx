@@ -17,7 +17,7 @@ export function ImageAttachment({ url, width, height }: ImageAttachmentProps) {
         height={height}
         alt=""
         loading="lazy"
-        className="max-w-[240px] max-h-[200px] object-cover rounded-(--radius-sm) cursor-pointer mt-1 block"
+        className="max-w-60 max-h-50 object-cover rounded-sm cursor-pointer mt-1 block"
         onClick={() => setLightboxOpen(true)}
       />
 

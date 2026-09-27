@@ -132,6 +132,10 @@ export function LoginView({ apiUrl, apiKey, onRegister, onClose }: LoginViewProp
               <ProjectLogo src={logoUrl} />
             </div>
 
+            <p className="text-xs text-(--color-text-muted) text-center -mt-2">
+              {t('auth.brandSubtitle')}
+            </p>
+
             <FeedbackBanner feedback={feedback} />
 
             <form

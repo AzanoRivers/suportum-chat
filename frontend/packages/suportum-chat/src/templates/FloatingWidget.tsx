@@ -23,7 +23,13 @@ interface SuportumChatProps {
   position?: Position
   buttonLabel?: string
   theme?: Theme
-  locale?: Locale
+  /**
+   * 'en' o 'es' fuerzan ese idioma siempre. 'auto' (o no pasar la prop) detecta
+   * el idioma del navegador del visitante, y si no tiene espanol entre sus
+   * idiomas, cae a ingles. La seleccion manual del visitante (toggle EN/ES
+   * dentro del widget) se recuerda entre sesiones salvo que se fuerce 'en'/'es' aca.
+   */
+  locale?: Locale | 'auto'
   userToken?: string
   onSetupComplete?: (apiKey: string) => void
   onProjectReset?: () => void
@@ -152,7 +158,7 @@ function SuportumChatInner({
             'fixed z-[9999] bottom-6 right-6',
             'hidden lg:flex',
             'glass-panel widget-minimized overflow-hidden',
-            'lg:rounded-(--radius-lg)',
+            'lg:rounded-lg',
             'border border-(--color-border-default)',
             'shadow-[0_8px_32px_rgba(3,11,58,0.7)]',
             isBarClosing  ? 'bar-close-exit'  : '',
@@ -248,7 +254,7 @@ function SuportumChatInner({
         className={[
           'fixed inset-0 z-[9999] flex flex-col',
           'lg:inset-auto lg:bottom-6 lg:right-6 lg:w-[430px]',
-          'lg:rounded-(--radius-lg)',
+          'lg:rounded-lg',
           'border border-(--color-border-default)',
           'shadow-[0_24px_64px_rgba(3,11,58,0.85)]',
           'overflow-hidden glass-panel widget-full-height widget-size-animate',
@@ -263,14 +269,18 @@ function SuportumChatInner({
 }
 
 export function SuportumChat({
-  locale = 'en',
+  locale,
   theme,
   position = 'bottom-right',
   ...rest
 }: SuportumChatProps) {
+  // 'auto' (o locale ausente) delega en I18nProvider, que resuelve en este orden:
+  // seleccion manual persistida (localStorage) -> idioma del navegador -> 'en'.
+  // 'en'/'es' explicito fuerza ese idioma siempre, sin importar navegador ni localStorage.
+  const forcedLocale = locale === 'auto' ? undefined : locale
   return (
     <div className="suportum-root">
-      <I18nProvider initialLocale={locale}>
+      <I18nProvider initialLocale={forcedLocale}>
         <ThemeProvider initialTheme={theme}>
           <SuportumChatInner position={position} {...rest} />
         </ThemeProvider>

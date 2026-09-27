@@ -69,15 +69,15 @@ export function UserDetail({ user, apiUrl, onBack, onStartDirectChat }: UserDeta
         {/* Meta info */}
         <div className="bg-(--color-bg-elevated) rounded-sm p-3 space-y-2">
           <div className="flex gap-2">
-            <span className="text-xs text-(--color-text-muted) min-w-[80px] font-medium">{t('auth.email')}</span>
+            <span className="text-xs text-(--color-text-muted) min-w-20 font-medium">{t('auth.email')}</span>
             <span className="text-xs text-(--color-text-primary) break-all">{user.email}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-xs text-(--color-text-muted) min-w-[80px] font-medium">ID</span>
+            <span className="text-xs text-(--color-text-muted) min-w-20 font-medium">ID</span>
             <span className="text-xs text-(--color-text-primary) font-mono break-all">{user.id}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-xs text-(--color-text-muted) min-w-[80px] font-medium">{t('common.createdAt')}</span>
+            <span className="text-xs text-(--color-text-muted) min-w-20 font-medium">{t('common.createdAt')}</span>
             <span className="text-xs text-(--color-text-primary)">
               {new Date(user.created_at).toLocaleDateString(undefined, {
                 year: 'numeric',

@@ -44,7 +44,7 @@ export function Button({
       disabled={disabled}
       aria-label={ariaLabel}
       className={[
-        'inline-flex items-center justify-center gap-2 font-medium tracking-wide rounded-(--radius-md) transition-all cursor-pointer',
+        'inline-flex items-center justify-center gap-2 font-medium tracking-wide rounded-md transition-all cursor-pointer',
         'min-h-11 min-w-11',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-(--color-accent)',

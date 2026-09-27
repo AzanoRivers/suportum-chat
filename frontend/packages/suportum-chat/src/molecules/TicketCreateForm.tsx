@@ -78,7 +78,7 @@ export function TicketCreateForm({ apiUrl, apiKey, onCreated, onClose }: TicketC
           type="button"
           onClick={onClose}
           aria-label={t('common.close')}
-          className="flex items-center justify-center min-h-8 min-w-8 rounded-(--radius-md) text-(--color-text-muted) hover:text-(--color-text-primary) hover:bg-(--color-bg-elevated) transition-all"
+          className="flex items-center justify-center min-h-8 min-w-8 rounded-md text-(--color-text-muted) hover:text-(--color-text-primary) hover:bg-(--color-bg-elevated) transition-all"
         >
           <X size={16} />
         </button>
@@ -112,7 +112,7 @@ export function TicketCreateForm({ apiUrl, apiKey, onCreated, onClose }: TicketC
             disabled={isSubmitting}
             rows={3}
             className={[
-              'w-full rounded-(--radius-md) px-3 py-2',
+              'w-full rounded-md px-3 py-2',
               'text-base text-(--color-text-primary)',
               'bg-(--color-bg-elevated) border border-(--color-border-default)',
               'focus:outline-none focus:ring-2 focus:ring-(--color-accent) focus:border-(--color-accent)',
@@ -136,7 +136,7 @@ export function TicketCreateForm({ apiUrl, apiKey, onCreated, onClose }: TicketC
                 onClick={() => setPriority(p)}
                 disabled={isSubmitting}
                 className={[
-                  'px-3 py-1 rounded-(--radius-sm) text-xs font-medium transition-all',
+                  'px-3 py-1 rounded-sm text-xs font-medium transition-all',
                   'disabled:opacity-50 disabled:cursor-not-allowed',
                   priority === p ? priorityActiveClasses[p] : priorityInactiveClass,
                 ].join(' ')}

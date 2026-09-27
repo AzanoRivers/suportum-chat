@@ -1,4 +1,4 @@
-/* SetupWizard — logo upload */
+/* SetupWizard: logo upload */
 .setup-logo-drop {
   display: flex;
   flex-direction: column;
@@ -48,6 +48,11 @@
   border: none;
   cursor: pointer;
   opacity: 0.8;
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .setup-logo-remove:hover { opacity: 1; }
 

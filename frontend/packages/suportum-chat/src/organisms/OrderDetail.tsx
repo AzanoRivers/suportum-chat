@@ -105,7 +105,7 @@ export function OrderDetail({ order, role, apiUrl, apiKey, onBack }: OrderDetail
           <div className="bg-(--color-bg-elevated) rounded-sm p-3 space-y-2">
             {Object.entries(order.details).map(([key, value]) => (
               <div key={key} className="flex gap-2">
-                <span className="text-xs text-(--color-text-muted) min-w-[80px] font-medium">
+                <span className="text-xs text-(--color-text-muted) min-w-20 font-medium">
                   {key}
                 </span>
                 <span className="text-xs text-(--color-text-primary) break-words">

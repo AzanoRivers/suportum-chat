@@ -1,0 +1,167 @@
+{
+  "project": "suportum-chat",
+  "last_updated": "2026-09-26",
+  "backend_features": [
+    {
+      "id": "b00",
+      "name": "Foundation",
+      "file": "backend/features/00-feature-foundation.md",
+      "status": "done",
+      "completed": "2026-06-08"
+    },
+    {
+      "id": "b01",
+      "name": "Chat Core",
+      "file": "backend/features/01-feature-chat-core.md",
+      "status": "done",
+      "completed": "2026-06-08"
+    },
+    {
+      "id": "b02",
+      "name": "Tickets",
+      "file": "backend/features/02-feature-tickets.md",
+      "status": "done",
+      "completed": "2026-06-08"
+    },
+    {
+      "id": "b03",
+      "name": "Orders",
+      "file": "backend/features/03-feature-orders.md",
+      "status": "done",
+      "completed": "2026-06-08"
+    },
+    {
+      "id": "b04",
+      "name": "Users",
+      "file": "backend/features/04-feature-users.md",
+      "status": "done",
+      "completed": "2026-06-08"
+    },
+    {
+      "id": "b05",
+      "name": "Upload Images",
+      "file": "backend/features/05-feature-upload-images.md",
+      "status": "done",
+      "completed": "2026-06-08"
+    },
+    {
+      "id": "b06",
+      "name": "Project API",
+      "file": "backend/features/06-feature-project-api.md",
+      "status": "done",
+      "completed": "2026-06-08"
+    },
+    {
+      "id": "b07",
+      "name": "Audit & Security",
+      "file": "backend/features/07-feature-audit-security.md",
+      "status": "done",
+      "completed": "2026-06-09",
+      "notes": "Rate limiting (memoria, CF-Connecting-IP), security headers middleware, logging estructurado, exception handler global, max_length en Pydantic (tickets/orders), INVALID_ROOM_ID en socket room:join. CORS refleja cualquier origin (correcto para widget embed-anywhere)."
+    },
+    {
+      "id": "b08",
+      "name": "Project Branding (backend)",
+      "file": "backend/features/08-feature-project-branding.md",
+      "status": "done",
+      "started": "2026-06-14",
+      "completed": "2026-09-26",
+      "depends_on": ["b00", "b05", "b06"],
+      "notes": "Contraparte backend de f08. Endpoints POST/DELETE /projects/me/logo, logo_data opcional en POST /setup. Ya estaba implementado completo desde el commit foundation; esta sesion solo corrigio un em dash en core/upload.py. Reviewer: APPROVED."
+    },
+    {
+      "id": "b09",
+      "name": "Validacion API Key + Dominio (backend)",
+      "file": "backend/features/09-feature-apikey-domain-validation.md",
+      "status": "done",
+      "completed": "2026-09-26",
+      "depends_on": ["b00", "b06"],
+      "notes": "Endpoint GET /projects/verify (not_found | ready | domain_mismatch), columna projects.domain (migracion 002), bind de dominio en POST /setup, run_migrations() generalizado para correr todas las migrations/*.sql con manejo de OperationalError acotado (ALTER TABLE no idempotente en SQLite). Fail closed sin Origin/Referer. Sin bypass de localhost. Reviewer: APPROVED."
+    }
+  ],
+  "frontend_features": [
+    {
+      "id": "f00",
+      "name": "Foundation",
+      "file": "frontend/features/00-feature-foundation.md",
+      "status": "done",
+      "completed": "2026-06-09"
+    },
+    {
+      "id": "f01",
+      "name": "Auth Widget",
+      "file": "frontend/features/01-feature-auth-widget.md",
+      "status": "done",
+      "completed": "2026-06-09",
+      "depends_on": ["f00"]
+    },
+    {
+      "id": "f02",
+      "name": "Chat Core",
+      "file": "frontend/features/02-feature-chat-core.md",
+      "status": "done",
+      "completed": "2026-06-09",
+      "depends_on": ["f01"]
+    },
+    {
+      "id": "f03",
+      "name": "Tickets",
+      "file": "frontend/features/03-feature-tickets.md",
+      "status": "done",
+      "completed": "2026-06-09",
+      "depends_on": ["f01"]
+    },
+    {
+      "id": "f04",
+      "name": "Orders Board",
+      "file": "frontend/features/04-feature-orders.md",
+      "status": "done",
+      "completed": "2026-06-09",
+      "depends_on": ["f01"]
+    },
+    {
+      "id": "f05",
+      "name": "User Management",
+      "file": "frontend/features/05-feature-users.md",
+      "status": "done",
+      "completed": "2026-06-09",
+      "depends_on": ["f01"]
+    },
+    {
+      "id": "f06",
+      "name": "Themes",
+      "file": "frontend/features/06-feature-themes.md",
+      "status": "done",
+      "completed": "2026-06-09",
+      "depends_on": ["f00"]
+    },
+    {
+      "id": "f07",
+      "name": "Polish & Mobile UX",
+      "file": "frontend/features/07-feature-polish.md",
+      "status": "done",
+      "completed": "2026-06-09",
+      "depends_on": ["f01", "f02", "f03", "f04", "f05", "f06"]
+    },
+    {
+      "id": "f08",
+      "name": "Project Branding (frontend)",
+      "file": "frontend/features/08-feature-project-branding.md",
+      "status": "in_progress",
+      "started": "2026-06-14",
+      "depends_on": ["f00", "f06", "b08"],
+      "status": "done",
+      "completed": "2026-09-26",
+      "notes": "Logo del proyecto: upload durante Setup Wizard paso 1 (con default AzanoLabs), editable en AdminSettings, mostrado en LoginView/RegisterView/LoadingScreen/ChatHeader. Atom ProjectLogo con fallback SVG inline (placeholder generico, decision de usuario), molecule LogoUploader, hook useProjectBranding via apiClient.postForm. Antes vivia como spec full-stack unico en features/f08-project-branding.md (raiz); se separo en b08 + f08 el 2026-09-26. Reviewer: APPROVED ronda 2 (ronda 1 rechazada por logo PNG en vez de SVG, touch target y useProjectBranding sin apiClient)."
+    },
+    {
+      "id": "f09",
+      "name": "Validacion API Key + Dominio (frontend)",
+      "file": "frontend/features/09-feature-apikey-domain-validation.md",
+      "status": "done",
+      "completed": "2026-09-26",
+      "depends_on": ["f00", "f01", "b09"],
+      "notes": "WidgetShell llama a GET /projects/verify antes de decidir setup-vs-login. Estados 'not_found' (ProjectNotFoundPlaceholder, icono PackageSearch, sin auto-reset), 'blocked' (DomainBlockedPlaceholder, mensaje Houston, icono ShieldAlert), y 'error' (ErrorPlaceholder generico para fallo de red, agregado por el Implementer, no listado en la tabla resumen del spec pero exigido por su seccion 6). Reviewer: APPROVED."
+    }
+  ]
+}

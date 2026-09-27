@@ -8,6 +8,15 @@ type Translations = typeof en
 
 const LOCALES: Record<Locale, Translations> = { en, es }
 
+export function detectBrowserLocale(): Locale {
+  if (typeof navigator === 'undefined') return 'en'
+  const languages = navigator.languages && navigator.languages.length > 0
+    ? navigator.languages
+    : [navigator.language]
+  const hasSpanish = languages.some((lang) => lang?.toLowerCase().startsWith('es'))
+  return hasSpanish ? 'es' : 'en'
+}
+
 function resolve(obj: Record<string, unknown>, path: string): string {
   const keys = path.split('.')
   let result: unknown = obj
@@ -38,8 +47,27 @@ interface I18nProviderProps {
   initialLocale?: Locale
 }
 
-export function I18nProvider({ children, initialLocale = 'en' }: I18nProviderProps) {
-  const [locale, setLocaleState] = useState<Locale>(initialLocale)
+const STORAGE_KEY = 'suportum-locale'
+
+export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    if (initialLocale) return initialLocale
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored === 'en' || stored === 'es') return stored
+    } catch {
+      // localStorage not available
+    }
+    return detectBrowserLocale()
+  })
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, locale)
+    } catch {
+      // localStorage not available
+    }
+  }, [locale])
 
   const setLocale = (next: Locale) => {
     setLocaleState(next)

@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, EmailStr, field_validator
 
@@ -64,6 +64,10 @@ class SetupCreateResponse(BaseModel):
 
 class SlugCheckResponse(BaseModel):
     available: bool
+
+
+class ProjectVerifyResponse(BaseModel):
+    status: Literal["not_found", "ready", "domain_mismatch"]
 
 
 class HealthResponse(BaseModel):

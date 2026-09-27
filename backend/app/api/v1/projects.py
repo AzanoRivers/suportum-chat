@@ -16,12 +16,14 @@ import uuid
 from typing import Any, Dict, Optional
 
 import aiosqlite
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from pydantic import BaseModel
 
 from app.config import settings
+from app.core.domain import extract_request_domain
 from app.core.errors import error_response
 from app.core.guards import require_admin
+from app.core.rate_limit import check_rate_limit
 from app.core.upload import (
     ALLOWED_MIMES,
     compress_to_webp,
@@ -30,6 +32,7 @@ from app.core.upload import (
 )
 from app.core.utils import now_iso
 from app.database import get_db
+from app.models.setup import ProjectVerifyResponse
 
 logger = logging.getLogger("suportum")
 
@@ -107,6 +110,67 @@ def _set_logo_url(
         parsed["logo_url"] = new_logo_url
     return json.dumps(parsed)
 
+
+# ---------------------------------------------------------------------------
+# Endpoint publico (sin JWT): se llama antes de que exista una sesion, para
+# que el frontend decida si mostrar setup, login, o una pantalla de error.
+# No debe filtrar nada del proyecto salvo el status.
+# ---------------------------------------------------------------------------
+
+@router.get("/verify", response_model=ProjectVerifyResponse)
+async def verify_project(
+    api_key: str,
+    request: Request,
+    db: aiosqlite.Connection = Depends(get_db),
+) -> ProjectVerifyResponse:
+    """
+    Dado un api_key, informa en que estado esta para que el widget decida
+    que pantalla mostrar antes de tener sesion: not_found, ready, o
+    domain_mismatch. Bindea el proyecto al dominio del primer request
+    resuelto que llega con domain = NULL (self-heal para proyectos creados
+    antes de este feature, o si el bind inicial en /setup fallo).
+    """
+    client_ip = (
+        request.headers.get("CF-Connecting-IP")
+        or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+        or (request.client.host if request.client else "unknown")
+    )
+    if not check_rate_limit(f"verify:{client_ip}", 30, 60):
+        raise HTTPException(status_code=429, detail="RATE_LIMITED")
+
+    async with db.execute(
+        "SELECT id, domain FROM projects WHERE api_key = ? AND is_active = 1",
+        (api_key,),
+    ) as cursor:
+        project = await cursor.fetchone()
+
+    if project is None:
+        return ProjectVerifyResponse(status="not_found")
+
+    request_domain = extract_request_domain(request)
+
+    if project["domain"] is None:
+        # Primera vez que se ve esta key con un dominio resuelto: bindear.
+        # Fail closed: si no se puede resolver el dominio del request, no
+        # se bindea "None" ni se asume ready.
+        if request_domain is None:
+            return ProjectVerifyResponse(status="domain_mismatch")
+        await db.execute(
+            "UPDATE projects SET domain = ?, updated_at = ? WHERE id = ?",
+            (request_domain, now_iso(), project["id"]),
+        )
+        await db.commit()
+        return ProjectVerifyResponse(status="ready")
+
+    if request_domain is not None and project["domain"] == request_domain:
+        return ProjectVerifyResponse(status="ready")
+
+    return ProjectVerifyResponse(status="domain_mismatch")
+
+
+# ---------------------------------------------------------------------------
+# Endpoints de administracion del proyecto (requieren JWT de admin)
+# ---------------------------------------------------------------------------
 
 @router.get("/me")
 async def get_project_me(

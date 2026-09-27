@@ -1,16 +1,16 @@
-﻿import os
-import tempfile
+﻿from pathlib import Path
 from typing import Any, Dict, Optional
 
 from pydantic import model_validator
 from pydantic_settings import BaseSettings
 
-# Directorio base en el temp del sistema operativo.
-# Windows: C:\Users\<user>\AppData\Local\Temp\suportum
-# Linux VPS: /tmp/suportum
-_TEMP_BASE = os.path.join(tempfile.gettempdir(), "suportum")
-_DEFAULT_DB = os.path.join(_TEMP_BASE, "data", "suportum.db")
-_DEFAULT_UPLOADS = os.path.join(_TEMP_BASE, "uploads")
+# Directorio base dentro del proyecto backend (no en el temp del sistema operativo).
+# El temp del SO puede limpiarse en cualquier reboot (por ejemplo /tmp en Linux),
+# lo cual borraria la base de datos y los uploads de produccion.
+# Ubicacion: backend/data/suportum.db y backend/uploads/, relativo a este archivo.
+_BACKEND_ROOT = Path(__file__).resolve().parent.parent
+_DEFAULT_DB = str(_BACKEND_ROOT / "data" / "suportum.db")
+_DEFAULT_UPLOADS = str(_BACKEND_ROOT / "uploads")
 
 
 class Settings(BaseSettings):
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     MESSAGE_RETENTION_DAYS: int = 60
 
-    # AWS SES — todos opcionales; el servicio de email se deshabilita si no están presentes
+    # AWS SES: todos opcionales, el servicio de email se deshabilita si no están presentes
     AWS_SES_ACCESS_KEY_ID: Optional[str] = None
     AWS_SES_SECRET_ACCESS_KEY: Optional[str] = None
     AWS_SES_FROM_EMAIL: Optional[str] = None
@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     @classmethod
     def resolve_empty_paths(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         # Pydantic-settings reads DATABASE_URL= as "" (empty string).
-        # Fall back to the tempfile-based default when the value is blank.
+        # Fall back to the project-relative default when the value is blank.
         if not values.get("DATABASE_URL"):
             values["DATABASE_URL"] = _DEFAULT_DB
         if not values.get("UPLOAD_DIR"):

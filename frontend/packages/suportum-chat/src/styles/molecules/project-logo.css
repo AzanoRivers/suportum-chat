@@ -124,7 +124,7 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: border-color 150ms ease-out, color 150ms ease-out;
-  min-height: 36px;
+  min-height: 44px;
 }
 .logo-uploader__upload-btn:hover {
   color: var(--color-accent);
@@ -192,9 +192,9 @@
 }
 .login-logo-wrap .project-logo--default .azano-logo {
   display: block;
-  height: 112px;
+  height: 40px;
   width: auto;
-  border-radius: 8px;
+  max-width: 100%;
   animation: suportum-neon-flicker 7.4s ease-in-out infinite;
 }
 

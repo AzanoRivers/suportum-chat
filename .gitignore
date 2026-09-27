@@ -342,11 +342,13 @@ build.log
 /android/
 
 # CLAUDE y GITHUB
+# El harness de .claude/ (feature_list.json, CHECKPOINTS.md, agentes, progress/)
+# se versiona a proposito, es estado compartido del harness, no ephemeral.
+# Solo se ignora la config personal/local de cada maquina.
+.claude/settings.local.json
+**/.claude/settings.local.json
 claude-*
 claude*
-.claude*
-**/.claude*
-**/.claude/**
 **/claude*
 **/claude-*
 **/claude*

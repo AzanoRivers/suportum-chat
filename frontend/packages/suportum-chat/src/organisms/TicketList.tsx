@@ -44,7 +44,7 @@ export function TicketList({ apiUrl, apiKey }: TicketListProps) {
           onClick={() => setShowForm((v) => !v)}
           aria-label={t('tickets.newTicket')}
           className={[
-            'flex items-center gap-1 px-2 py-1 rounded-(--radius-md) text-xs font-medium transition-all',
+            'flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all',
             'min-h-8',
             showForm
               ? 'bg-(--color-accent) text-(--color-bg-base)'

@@ -8,6 +8,7 @@ import { FormField } from '../molecules/FormField'
 import { PasswordField } from '../molecules/PasswordField'
 import { StepIndicator } from '../molecules/StepIndicator'
 import { useI18n, type Locale } from '../i18n'
+import { MAX_LOGO_SIZE_BYTES, ALLOWED_LOGO_MIME_TYPES } from '../lib/constants'
 
 interface SetupWizardProps {
   apiUrl: string
@@ -42,8 +43,8 @@ export function SetupWizard({ apiUrl, onComplete, onApiKeyReceived, onClose }: S
   const [isDragging, setIsDragging] = useState(false)
 
   const handleLogoFile = (file: File) => {
-    if (file.size > 2 * 1024 * 1024) { setApiError('UPLOAD_TOO_LARGE'); return }
-    if (!['image/png', 'image/jpeg', 'image/gif', 'image/webp'].includes(file.type)) {
+    if (file.size > MAX_LOGO_SIZE_BYTES) { setApiError('UPLOAD_TOO_LARGE'); return }
+    if (!ALLOWED_LOGO_MIME_TYPES.includes(file.type as typeof ALLOWED_LOGO_MIME_TYPES[number])) {
       setApiError('UPLOAD_TYPE_NOT_SUPPORTED'); return
     }
     const reader = new FileReader()
@@ -244,6 +245,7 @@ export function SetupWizard({ apiUrl, onComplete, onApiKeyReceived, onClose }: S
                 <div>
                   {logoData ? (
                     <div className="setup-logo-preview">
+                      <span className="setup-logo-drop__label">{t('setup.logoPreview')}</span>
                       <img src={logoData} alt="Logo preview" className="setup-logo-preview__img" />
                       <button
                         type="button"
@@ -268,6 +270,7 @@ export function SetupWizard({ apiUrl, onComplete, onApiKeyReceived, onClose }: S
                     >
                       <span className="setup-logo-drop__label">{t('setup.logoUpload')}</span>
                       <span className="setup-logo-drop__hint">{t('setup.logoUploadHint')}</span>
+                      <span className="setup-logo-drop__hint">{t('setup.logoDefault')}</span>
                     </label>
                   )}
 

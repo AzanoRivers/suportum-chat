@@ -36,7 +36,7 @@ export function TicketDetail({ ticket, onBack }: TicketDetailProps) {
           type="button"
           onClick={onBack}
           aria-label={t('common.back')}
-          className="flex items-center gap-1 min-h-9 px-2 rounded-(--radius-md) text-xs text-(--color-text-muted) hover:text-(--color-text-primary) hover:bg-(--color-bg-elevated) transition-all"
+          className="flex items-center gap-1 min-h-9 px-2 rounded-md text-xs text-(--color-text-muted) hover:text-(--color-text-primary) hover:bg-(--color-bg-elevated) transition-all"
         >
           <ArrowLeft size={14} />
           {t('common.back')}

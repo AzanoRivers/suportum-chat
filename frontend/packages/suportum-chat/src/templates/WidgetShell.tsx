@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuthStore } from '../store/authStore'
 import { consumeAuthAnimation } from '../lib/authAnimation'
+import { verifyProject } from '../lib/api'
 import { LoginView } from '../organisms/LoginView'
 import { RegisterView } from '../organisms/RegisterView'
 import { SetupWizard } from '../organisms/SetupWizard'
 import { LoadingScreen } from '../organisms/LoadingScreen'
+import { ErrorPlaceholder } from '../molecules/ErrorPlaceholder'
+import { ProjectNotFoundPlaceholder } from '../molecules/ProjectNotFoundPlaceholder'
+import { DomainBlockedPlaceholder } from '../molecules/DomainBlockedPlaceholder'
 import { ClientView } from './ClientView'
 import { AgentView } from './AgentView'
 import { AdminView } from './AdminView'
@@ -34,7 +38,10 @@ function WidgetFooter() {
   )
 }
 
-type ShellStatus = 'checking' | 'setup' | 'ready'
+// 'not_found' y 'blocked' vienen de la respuesta de negocio de /projects/verify
+// (b09). 'error' es distinto: fallo de red/backend caido al llamar verify, no
+// debe confundirse con ninguno de los dos anteriores (ver f09 seccion 6).
+type ShellStatus = 'checking' | 'setup' | 'ready' | 'not_found' | 'blocked' | 'error'
 
 export function WidgetShell({ apiUrl, apiKey: initialApiKey, onClose, onSetupComplete, onProjectReset }: WidgetShellProps) {
   const { token, isVerified, role } = useAuthStore()
@@ -48,12 +55,36 @@ export function WidgetShell({ apiUrl, apiKey: initialApiKey, onClose, onSetupCom
   const isMountedRef = useRef(false)
 
   useEffect(() => {
-    if (initialApiKey) {
-      setShellStatus('ready')
-    } else {
-      onProjectReset?.()
-      setShellStatus('setup')
+    let cancelled = false
+
+    async function check() {
+      if (!initialApiKey) {
+        // Sin apiKey de entrada: no hay nada que verificarle al backend, es
+        // directamente el flujo de setup (sin cambios respecto al comportamiento previo).
+        onProjectReset?.()
+        setShellStatus('setup')
+        return
+      }
+
+      const result = await verifyProject(apiUrl, initialApiKey)
+      if (cancelled) return
+
+      // Importante: 'not_found' NUNCA dispara onProjectReset() ni 'setup'.
+      // La key esta mal, pero corregirla es manual del lado del integrador
+      // (ver f09 seccion 2): no se auto-limpia nada guardado.
+      if (result.status === 'ready') {
+        setShellStatus('ready')
+      } else if (result.status === 'not_found') {
+        setShellStatus('not_found')
+      } else if (result.status === 'domain_mismatch') {
+        setShellStatus('blocked')
+      } else {
+        setShellStatus('error')
+      }
     }
+
+    void check()
+    return () => { cancelled = true }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Habilita la transición solo cuando el cambio de token fue user-initiated
@@ -100,6 +131,39 @@ export function WidgetShell({ apiUrl, apiKey: initialApiKey, onClose, onSetupCom
             onComplete={handleSetupComplete}
             onClose={onClose}
           />
+        </div>
+        <WidgetFooter />
+      </div>
+    )
+  }
+
+  if (shellStatus === 'not_found') {
+    return (
+      <div className="widget-shell__full">
+        <div className="widget-shell__full-body">
+          <ProjectNotFoundPlaceholder />
+        </div>
+        <WidgetFooter />
+      </div>
+    )
+  }
+
+  if (shellStatus === 'blocked') {
+    return (
+      <div className="widget-shell__full">
+        <div className="widget-shell__full-body">
+          <DomainBlockedPlaceholder />
+        </div>
+        <WidgetFooter />
+      </div>
+    )
+  }
+
+  if (shellStatus === 'error') {
+    return (
+      <div className="widget-shell__full">
+        <div className="widget-shell__full-body">
+          <ErrorPlaceholder code="NETWORK_ERROR" />
         </div>
         <WidgetFooter />
       </div>

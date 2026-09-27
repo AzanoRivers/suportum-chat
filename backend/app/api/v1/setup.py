@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.config import settings
 from app.core.auth import hash_password
+from app.core.domain import extract_request_domain
 from app.core.rate_limit import check_rate_limit
 from app.database import get_db
 from app.models.setup import (
@@ -132,11 +133,12 @@ async def setup_create(
     project_settings = json.dumps({"language": body.language})
     user_id = str(uuid4())
     hashed = hash_password(body.admin_password)
+    domain = extract_request_domain(request)
 
     try:
         await db.execute(
-            "INSERT INTO projects (id, name, api_key, slug, settings) VALUES (?, ?, ?, ?, ?)",
-            (project_id, body.name, api_key, final_slug, project_settings),
+            "INSERT INTO projects (id, name, api_key, slug, settings, domain) VALUES (?, ?, ?, ?, ?, ?)",
+            (project_id, body.name, api_key, final_slug, project_settings, domain),
         )
         await db.execute(
             "INSERT INTO users (id, project_id, email, username, password, role) VALUES (?, ?, ?, ?, ?, ?)",

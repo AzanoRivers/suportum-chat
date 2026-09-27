@@ -283,6 +283,12 @@ export const en = {
     SERVICE_UNAVAILABLE: 'Service temporarily unavailable.',
     NETWORK_ERROR: 'Connection error. Check your internet connection.',
     PROJECT_NOT_FOUND: 'Project not found or inactive.',
+    projectNotFoundTitle: 'Houston, we have a problem...',
+    projectNotFoundBody1: "This API Key might be from another universe.",
+    projectNotFoundBody2: "No project is assigned to it on this server.",
+    projectNotFoundBody3: "Check your widget setup, or remove it manually to start a new one.",
+    domainMismatchTitle: 'Houston, we have a problem... something looks off.',
+    domainMismatchBody: 'This API Key is registered to a different domain.',
   },
   accessibility: {
     openChat: 'Open support chat',
