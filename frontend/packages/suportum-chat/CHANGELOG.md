@@ -1,10 +1,12 @@
 # Changelog
 
-## [0.2.0] - 2026-09-27
+## [0.3.0] - 2026-09-27
 
 > Nota: el changelog no tenia entradas entre 0.1.0 y 0.1.7 (varios publishes
 > sin registro, package.json se bumpea en cada publish a npm y no siempre hay
 > un cambio grande detras de cada patch). Se retoma el registro desde aca.
+> La 0.2.0 se salteo por un doble bump accidental antes de este publish, no
+> existe como version publicada.
 
 - Project branding: logo del proyecto opcional en el Setup Wizard (paso 1) y
   editable despues en AdminSettings. PNG/JPG/GIF/WebP, maximo 2MB, redimensionado
