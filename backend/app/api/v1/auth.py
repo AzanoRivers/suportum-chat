@@ -13,11 +13,20 @@ from app.core.auth import (
     verify_password,
 )
 from app.core.guards import get_scoped_project
-from app.core.rate_limit import check_rate_limit
+from app.core.rate_limit import check_rate_limit, is_rate_limited, record_attempt
 from app.database import get_db
 from app.models.auth import LoginRequest, LoginResponse, MeResponse, RegisterRequest
 
 router = APIRouter()
+
+
+def _extract_client_ip(request: Request) -> str:
+    """Extrae la IP real del cliente detras de Cloudflare, con fallback."""
+    return (
+        request.headers.get("CF-Connecting-IP")
+        or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+        or (request.client.host if request.client else "unknown")
+    )
 
 
 async def _resolve_project(api_key: str, db: aiosqlite.Connection) -> str:
@@ -35,10 +44,28 @@ async def _resolve_project(api_key: str, db: aiosqlite.Connection) -> str:
 @router.post("/login", response_model=LoginResponse)
 async def login(
     body: LoginRequest,
+    request: Request,
     response: Response,
     db: aiosqlite.Connection = Depends(get_db),
 ) -> LoginResponse:
+    client_ip = _extract_client_ip(request)
+    if not check_rate_limit(
+        f"login_ip:{client_ip}",
+        settings.LOGIN_IP_RATE_LIMIT_MAX,
+        settings.LOGIN_IP_RATE_LIMIT_WINDOW,
+    ):
+        raise HTTPException(status_code=429, detail="RATE_LIMITED")
+
     project_id = await _resolve_project(body.api_key, db)
+
+    email_key = body.email.lower()
+    account_key = f"login:{project_id}:{email_key}"
+    if is_rate_limited(
+        account_key,
+        settings.LOGIN_RATE_LIMIT_MAX,
+        settings.LOGIN_RATE_LIMIT_WINDOW,
+    ):
+        raise HTTPException(status_code=429, detail="RATE_LIMITED")
 
     async with db.execute(
         "SELECT id, password, role FROM users WHERE email = ? AND project_id = ? AND is_active = 1",
@@ -47,6 +74,7 @@ async def login(
         user = await cursor.fetchone()
 
     if user is None or not verify_password(body.password, user["password"]):
+        record_attempt(account_key)
         raise HTTPException(status_code=401, detail="AUTH_INVALID_CREDENTIALS")
 
     payload = {
@@ -82,11 +110,7 @@ async def register(
     response: Response,
     db: aiosqlite.Connection = Depends(get_db),
 ) -> LoginResponse:
-    client_ip = (
-        request.headers.get("CF-Connecting-IP")
-        or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
-        or (request.client.host if request.client else "unknown")
-    )
+    client_ip = _extract_client_ip(request)
     if not check_rate_limit(f"register:{client_ip}", 10, 3600):
         raise HTTPException(status_code=429, detail="RATE_LIMITED")
 

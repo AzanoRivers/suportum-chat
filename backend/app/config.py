@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     MAX_LOGO_DIMENSION_PX: int = 512
     SOCKET_MSG_RATE_MAX: int = 30
     SOCKET_MSG_RATE_WINDOW: int = 60
+    LOGIN_RATE_LIMIT_MAX: int = 5
+    LOGIN_RATE_LIMIT_WINDOW: int = 300
+    LOGIN_IP_RATE_LIMIT_MAX: int = 30
+    LOGIN_IP_RATE_LIMIT_WINDOW: int = 300
     LOG_LEVEL: str = "INFO"
     MESSAGE_RETENTION_DAYS: int = 60
 
